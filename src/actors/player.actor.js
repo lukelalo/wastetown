@@ -39,12 +39,18 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   start() {
     this.isAlive = true;
     this.isActing = false;
-    this.on("animationcomplete-moveUp", this.moveComplete, this);
-    this.on("animationcomplete-moveDown", this.moveComplete, this);
-    this.on("animationcomplete-moveLeft", this.moveComplete, this);
-    this.on("animationcomplete-moveRight", this.moveComplete, this);
+    this.on("animationcomplete-walkUp", this.moveComplete, this);
+    this.on("animationcomplete-walkDown", this.moveComplete, this);
+    this.on("animationcomplete-walkLeft", this.moveComplete, this);
+    this.on("animationcomplete-walkRight", this.moveComplete, this);
 
     this.play("idleDown", true);
+  }
+
+  walkUp() {
+    this.play("walkUp", true);
+    this.direction = Directions.UP;
+    this.isMoving = true;
   }
 
   moveUp() {
@@ -76,6 +82,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   moveComplete() {
+    console.log("move Complete");
     this.stop();
   }
 
@@ -121,7 +128,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.moveLeft();
     } else if (this.right.isDown) {
       this.moveRight();
-    } else if(!this.isMoving){
+    } else if (!this.isMoving) {
       this.stop();
     }
   }
