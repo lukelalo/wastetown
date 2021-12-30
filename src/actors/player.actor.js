@@ -55,34 +55,39 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   moveUp() {
     this.y -= STEP;
-    this.play("walkUp", true);
-    this.direction = Directions.UP;
-    this.isMoving = true;
   }
 
-  moveDown() {
-    this.y += STEP;
+  walkDown() {
     this.play("walkDown", true);
     this.direction = Directions.DOWN;
     this.isMoving = true;
   }
 
-  moveLeft() {
-    this.x -= STEP;
+  moveDown() {
+    this.y += STEP;
+  }
+
+  walkLeft() {
     this.play("walkLeft", true);
     this.direction = Directions.LEFT;
     this.isMoving = true;
   }
 
-  moveRight() {
-    this.x += STEP;
+  moveLeft() {
+    this.x -= STEP;
+  }
+
+  walkRight() {
     this.play("walkRight", true);
     this.direction = Directions.RIGHT;
     this.isMoving = true;
   }
 
+  moveRight() {
+    this.x += STEP;
+  }
+
   moveComplete() {
-    console.log("move Complete");
     this.stop();
   }
 
@@ -120,14 +125,29 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (this.up.isDown) {
-      this.moveUp();
+    if (this.isMoving) {
+      switch (this.direction) {
+        case Directions.LEFT:
+          this.moveLeft();
+          break;
+        case Directions.RIGHT:
+          this.moveRight();
+          break;
+        case Directions.UP:
+          this.moveUp();
+          break;
+        case Directions.DOWN:
+          this.moveDown();
+          break;
+      }
+    } else if (this.up.isDown) {
+      this.walkUp();
     } else if (this.down.isDown) {
-      this.moveDown();
+      this.walkDown();
     } else if (this.left.isDown) {
-      this.moveLeft();
+      this.walkLeft();
     } else if (this.right.isDown) {
-      this.moveRight();
+      this.walkRight();
     } else if (!this.isMoving) {
       this.stop();
     }
