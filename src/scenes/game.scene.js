@@ -4,6 +4,8 @@ import {
   SCREEN_HEIGHT,
   TOWN_WIDTH,
   TOWN_HEIGHT,
+  TILE_WIDTH,
+  TILE_HEIGHT,
   Town,
 } from "../constants/game.constants";
 import Player from "../actors/player.actor";
@@ -15,23 +17,21 @@ export default class Game extends Phaser.Scene {
 
   create() {
     this.map = this.make.tilemap({
-      tileWidth: 16,
-      tileHeight: 16,
+      tileWidth: TILE_WIDTH,
+      tileHeight: TILE_HEIGHT,
       width: TOWN_WIDTH,
       height: TOWN_HEIGHT,
     });
-    this.tileset = this.map.addTilesetImage("town", "town", 16, 16, 0, 0);
+    this.tileset = this.map.addTilesetImage("town", "basic", 16, 16, 0, 0);
     this.layer = this.map.createBlankLayer("Layer 1", this.tileset);
-    this.layer.fill(6);
+    this.layer.fill(49);
 
     this.player = new Player(this, {
-      x: SCREEN_WIDTH / 2,
-      y: SCREEN_HEIGHT / 2,
+      x: 1,
+      y: 1,
     });
     this.player.setScale(2);
     this.layer.setScale(2);
-    this.player.x = this.map.tileToWorldX(13);
-    this.player.y = this.map.tileToWorldY(10);
     this.start();
   }
 

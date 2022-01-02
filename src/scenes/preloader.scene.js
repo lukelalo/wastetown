@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import logoImg from "../assets/logo.png";
 import townImg from "../assets/town.png";
+import basicImg from "../assets/lpc-tileset-16x16/tileset_basic_terrain.png";
 import spritesPng from "../assets/sprites/sprites.png";
 import spritesJson from "../assets/sprites/sprites.json";
 import playerPng from "../assets/sprites/player.png";
@@ -25,6 +26,7 @@ export default class Preloader extends Phaser.Scene {
 
     this.load.image("logo", logoImg);
     this.load.image("town", townImg);
+    this.load.image("basic", basicImg);
     this.load.atlas("sprites", spritesPng, spritesJson);
     this.load.atlas("player", playerPng, playerJson);
   }

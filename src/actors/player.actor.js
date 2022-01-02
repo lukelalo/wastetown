@@ -1,4 +1,9 @@
-import { Directions, STEP } from "../constants/game.constants";
+import {
+  Directions,
+  STEP,
+  TILE_HEIGHT,
+  TILE_WIDTH,
+} from "../constants/game.constants";
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, position) {
@@ -11,10 +16,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = true;
     this.isActing = false;
     this.isMoving = false;
+    this.lastMoveTime = 0;
+
+    this.position = position;
 
     this.sound = scene.sound;
-    this.x = position.x;
-    this.y = position.y;
+    this.x = position.x * TILE_WIDTH + TILE_WIDTH / 2;
+    this.y = position.y * TILE_HEIGHT + TILE_HEIGHT / 2;
     this.direction = Directions.DOWN;
 
     this.spacebar = this.scene.input.keyboard.addKey(
@@ -51,40 +59,28 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.play("walkUp", true);
     this.direction = Directions.UP;
     this.isMoving = true;
-  }
-
-  moveUp() {
-    this.y -= STEP;
+    this.position.y--;
   }
 
   walkDown() {
     this.play("walkDown", true);
     this.direction = Directions.DOWN;
     this.isMoving = true;
-  }
-
-  moveDown() {
-    this.y += STEP;
+    this.position.y++;
   }
 
   walkLeft() {
     this.play("walkLeft", true);
     this.direction = Directions.LEFT;
     this.isMoving = true;
-  }
-
-  moveLeft() {
-    this.x -= STEP;
+    this.position.x--;
   }
 
   walkRight() {
     this.play("walkRight", true);
     this.direction = Directions.RIGHT;
     this.isMoving = true;
-  }
-
-  moveRight() {
-    this.x += STEP;
+    this.position.x++;
   }
 
   moveComplete() {
@@ -113,6 +109,27 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  updatePosition() {
+    if (this.x > this.position.x * TILE_WIDTH + TILE_WIDTH / 2) {
+      this.x--;
+    } else if (this.x < this.position.x * TILE_WIDTH + TILE_WIDTH / 2) {
+      this.x++;
+    }
+
+    if (this.y > this.position.y * TILE_HEIGHT + TILE_HEIGHT / 2) {
+      this.y--;
+    } else if (this.y < this.position.y * TILE_HEIGHT + TILE_HEIGHT / 2) {
+      this.y++;
+    }
+
+    if (
+      this.x === this.position.x * TILE_WIDTH + TILE_WIDTH / 2 &&
+      this.y === this.position.y * TILE_HEIGHT + TILE_HEIGHT / 2
+    ) {
+      this.stop();
+    }
+  }
+
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
@@ -125,29 +142,48 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (this.isMoving) {
-      switch (this.direction) {
-        case Directions.LEFT:
-          this.moveLeft();
-          break;
-        case Directions.RIGHT:
-          this.moveRight();
-          break;
-        case Directions.UP:
-          this.moveUp();
-          break;
-        case Directions.DOWN:
-          this.moveDown();
-          break;
+    var repeatMoveDelay = 500;
+
+    if (time > this.lastMoveTime + repeatMoveDelay) {
+      if (this.down.isDown) {
+        if (
+          true ||
+          isTileOpenAt(this.position.x, this.position.y + TILE_HEIGHT)
+        ) {
+          this.lastMoveTime = time;
+          this.walkDown();
+        }
+      } else if (this.up.isDown) {
+        if (
+          true ||
+          isTileOpenAt(this.position.x, this.position.y - TILE_HEIGHT)
+        ) {
+          this.lastMoveTime = time;
+          this.walkUp();
+        }
       }
-    } else if (this.up.isDown) {
-      this.walkUp();
-    } else if (this.down.isDown) {
-      this.walkDown();
-    } else if (this.left.isDown) {
-      this.walkLeft();
-    } else if (this.right.isDown) {
-      this.walkRight();
+
+      if (this.left.isDown) {
+        if (
+          true ||
+          isTileOpenAt(this.position.x - TILE_WIDTH, this.position.y)
+        ) {
+          this.lastMoveTime = time;
+          this.walkLeft();
+        }
+      } else if (this.right.isDown) {
+        if (
+          true ||
+          isTileOpenAt(this.position.x + TILE_WIDTH, this.position.y)
+        ) {
+          this.lastMoveTime = time;
+          this.walkRight();
+        }
+      }
+    }
+
+    if (this.isMoving) {
+      this.updatePosition();
     } else if (!this.isMoving) {
       this.stop();
     }
