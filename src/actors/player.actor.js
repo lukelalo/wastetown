@@ -1,15 +1,18 @@
 import {
   Directions,
   STEP,
+  TOWN_HEIGHT,
+  TOWN_WIDTH,
   TILE_HEIGHT,
   TILE_WIDTH,
+  SCALE,
 } from "../constants/game.constants";
+import EasyStar from "easystarjs";
 
-export default class Player extends Phaser.Physics.Arcade.Sprite {
+class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, position) {
     super(scene, position.x, position.y, "player", "walkDown000");
-
-    this.setOrigin(1, 1);
+    this.setOrigin(0.25,0.3);
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -17,29 +20,31 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.isActing = false;
     this.isMoving = false;
     this.lastMoveTime = 0;
+    this.currentPath = [];
+    this.nextStep = null;
+
+    this.finder = new EasyStar.js();
+    this.finder.setAcceptableTiles([49]);
+    let grid = [];
+    for (let y = 0; y < TOWN_HEIGHT; y++) {
+      let col = [];
+      for (let x = 0; x < TOWN_WIDTH; x++) {
+        col.push(scene.map.getTileAt(x, y).index);
+      }
+      grid.push(col);
+    }
+    this.finder.setGrid(grid);
+
+    this.camera = scene.cameras.main;
+    this.camera.setBounds(0, 0, TOWN_WIDTH * TILE_WIDTH, TOWN_HEIGHT * TILE_HEIGHT);
+    this.camera.startFollow(this);
 
     this.position = position;
 
     this.sound = scene.sound;
-    this.x = position.x * TILE_WIDTH + TILE_WIDTH / 2;
-    this.y = position.y * TILE_HEIGHT + TILE_HEIGHT / 2;
+    this.x = position.x * SCALE * TILE_WIDTH + (TILE_WIDTH / 2);
+    this.y = position.y * SCALE * TILE_HEIGHT + (TILE_HEIGHT / 2);
     this.direction = Directions.DOWN;
-
-    this.spacebar = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SPACE
-    );
-    this.up = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.UP
-    );
-    this.down = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.DOWN
-    );
-    this.left = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.LEFT
-    );
-    this.right = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.RIGHT
-    );
 
     this.play("idleDown");
   }
@@ -47,10 +52,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   start() {
     this.isAlive = true;
     this.isActing = false;
-    this.on("animationcomplete-walkUp", this.moveComplete, this);
-    this.on("animationcomplete-walkDown", this.moveComplete, this);
-    this.on("animationcomplete-walkLeft", this.moveComplete, this);
-    this.on("animationcomplete-walkRight", this.moveComplete, this);
+    this.scene.input.on('pointerup',this.handleClick, this);
 
     this.play("idleDown", true);
   }
@@ -60,6 +62,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.direction = Directions.UP;
     this.isMoving = true;
     this.position.y--;
+    console.timeEnd("animation");
+    console.time("animation");
   }
 
   walkDown() {
@@ -67,6 +71,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.direction = Directions.DOWN;
     this.isMoving = true;
     this.position.y++;
+    console.timeEnd("animation");
+    console.time("animation");
   }
 
   walkLeft() {
@@ -74,6 +80,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.direction = Directions.LEFT;
     this.isMoving = true;
     this.position.x--;
+    console.timeEnd("animation");
+    console.time("animation");
   }
 
   walkRight() {
@@ -81,10 +89,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.direction = Directions.RIGHT;
     this.isMoving = true;
     this.position.x++;
-  }
-
-  moveComplete() {
-    this.stop();
+    console.timeEnd("animation");
+    console.time("animation");
   }
 
   doAction() {}
@@ -107,26 +113,31 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.play("idleDown");
         break;
     }
+
+    // Hide destination marker
+    this.scene.destination.setVisible(false);
+    console.timeEnd("animation");
+  }
+
+  move(path) {
+    this.currentPath = path;
+    this.isMoving = true;
+
+    // Remove first always
+    this.currentPath.shift();
   }
 
   updatePosition() {
-    if (this.x > this.position.x * TILE_WIDTH + TILE_WIDTH / 2) {
-      this.x--;
-    } else if (this.x < this.position.x * TILE_WIDTH + TILE_WIDTH / 2) {
-      this.x++;
+    if (this.x > this.position.x * SCALE * TILE_WIDTH + (TILE_WIDTH / 2)) {
+      this.x -= SCALE;
+    } else if (this.x < this.position.x * SCALE * TILE_WIDTH + (TILE_WIDTH / 2)) {
+      this.x += SCALE;
     }
 
-    if (this.y > this.position.y * TILE_HEIGHT + TILE_HEIGHT / 2) {
-      this.y--;
-    } else if (this.y < this.position.y * TILE_HEIGHT + TILE_HEIGHT / 2) {
-      this.y++;
-    }
-
-    if (
-      this.x === this.position.x * TILE_WIDTH + TILE_WIDTH / 2 &&
-      this.y === this.position.y * TILE_HEIGHT + TILE_HEIGHT / 2
-    ) {
-      this.stop();
+    if (this.y > this.position.y * SCALE * TILE_HEIGHT + (TILE_HEIGHT / 2)) {
+      this.y -= SCALE;
+    } else if (this.y < this.position.y * SCALE * TILE_HEIGHT + (TILE_HEIGHT / 2)) {
+      this.y += SCALE;
     }
   }
 
@@ -137,55 +148,64 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this.spacebar) && !this.isActing) {
-      this.doAction();
-      return;
-    }
-
-    var repeatMoveDelay = 500;
-
-    if (time > this.lastMoveTime + repeatMoveDelay) {
-      if (this.down.isDown) {
-        if (
-          true ||
-          isTileOpenAt(this.position.x, this.position.y + TILE_HEIGHT)
-        ) {
-          this.lastMoveTime = time;
-          this.walkDown();
-        }
-      } else if (this.up.isDown) {
-        if (
-          true ||
-          isTileOpenAt(this.position.x, this.position.y - TILE_HEIGHT)
-        ) {
-          this.lastMoveTime = time;
-          this.walkUp();
-        }
-      }
-
-      if (this.left.isDown) {
-        if (
-          true ||
-          isTileOpenAt(this.position.x - TILE_WIDTH, this.position.y)
-        ) {
-          this.lastMoveTime = time;
-          this.walkLeft();
-        }
-      } else if (this.right.isDown) {
-        if (
-          true ||
-          isTileOpenAt(this.position.x + TILE_WIDTH, this.position.y)
-        ) {
-          this.lastMoveTime = time;
-          this.walkRight();
-        }
-      }
-    }
-
     if (this.isMoving) {
+      let repeatMoveDelay = 130;
+      if (time > this.lastMoveTime + repeatMoveDelay) {
+        if (this.currentPath.length === 0 && this.nextStep === null) {
+          this.stop();
+        } else {
+          // Calculate next step if finished
+          if (this.nextStep === null) {
+            this.nextStep = this.currentPath.shift();
+          }
+          this.lastMoveTime = time;
+          if (this.nextStep.x > this.position.x) {
+            this.walkRight();
+          } else if (this.nextStep.x < this.position.x) {
+            this.walkLeft();
+          } else if (this.nextStep.y > this.position.y) {
+            this.walkDown();
+          } else if (this.nextStep.y < this.position.y) {
+            this.walkUp();
+          } else {
+            this.position.x = this.nextStep.x;
+            this.position.y = this.nextStep.y;
+            this.nextStep = null;
+          }
+        }
+      }
+
       this.updatePosition();
-    } else if (!this.isMoving) {
-      this.stop();
     }
   }
+
+  handleClick(pointer) {
+    let player = this;
+    let x = this.camera.scrollX + pointer.x;
+    let y = this.camera.scrollY + pointer.y;
+    let toX = Math.floor(x/(TILE_WIDTH * SCALE));
+    let toY = Math.floor(y/(TILE_HEIGHT * SCALE));
+    let fromX = Math.floor(this.x/(TILE_WIDTH * SCALE));
+    let fromY = Math.floor(this.y/(TILE_HEIGHT * SCALE));
+
+    let pointerTileX = this.scene.map.worldToTileX(x);
+    let pointerTileY = this.scene.map.worldToTileY(y);
+    this.scene.destination.x = this.scene.map.tileToWorldX(pointerTileX);
+    this.scene.destination.y = this.scene.map.tileToWorldY(pointerTileY);
+    this.scene.destination.setVisible(true);
+
+    console.log('going from ('+fromX+','+fromY+') to ('+toX+','+toY+')');
+    console.time("animation");
+    this.finder.findPath(fromX, fromY, toX, toY, function( path ) {
+        if (path === null) {
+            console.warn("Path was not found.");
+        } else {
+            console.log(path);
+            player.move(path);
+        }
+    });
+    this.finder.calculate();
+  }
 }
+
+export default Player;

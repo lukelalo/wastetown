@@ -89,6 +89,7 @@ export default class Preloader extends Phaser.Scene {
         zeroPad: 3,
       }),
       frameRate: 8,
+      repeat: -1,
     });
 
     this.anims.create({
@@ -100,6 +101,7 @@ export default class Preloader extends Phaser.Scene {
         zeroPad: 3,
       }),
       frameRate: 8,
+      repeat: -1,
     });
 
     this.anims.create({
@@ -111,6 +113,7 @@ export default class Preloader extends Phaser.Scene {
         zeroPad: 3,
       }),
       frameRate: 8,
+      repeat: -1,
     });
 
     this.anims.create({
@@ -122,6 +125,7 @@ export default class Preloader extends Phaser.Scene {
         zeroPad: 3,
       }),
       frameRate: 8,
+      repeat: -1,
     });
 
     if (this.sound.locked) {
