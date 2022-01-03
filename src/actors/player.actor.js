@@ -1,6 +1,5 @@
 import {
   Directions,
-  STEP,
   TOWN_HEIGHT,
   TOWN_WIDTH,
   TILE_HEIGHT,
@@ -12,7 +11,7 @@ import EasyStar from "easystarjs";
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, position) {
     super(scene, position.x, position.y, "player", "walkDown000");
-    this.setOrigin(0.25, 0.3);
+    this.setOrigin(0, 0);
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -23,12 +22,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.nextStep = undefined;
 
     this.finder = new EasyStar.js();
-    this.finder.setAcceptableTiles([49]);
+    this.finder.setAcceptableTiles([-1]);
     let grid = [];
     for (let y = 0; y < TOWN_HEIGHT; y++) {
       let col = [];
       for (let x = 0; x < TOWN_WIDTH; x++) {
-        col.push(scene.map.getTileAt(x, y).index);
+        col.push(scene.map.getTileAt(x, y, true, "Collision").index);
       }
       grid.push(col);
     }
@@ -38,16 +37,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.camera.setBounds(
       0,
       0,
-      TOWN_WIDTH * TILE_WIDTH,
-      TOWN_HEIGHT * TILE_HEIGHT
+      TOWN_WIDTH * TILE_WIDTH * SCALE,
+      TOWN_HEIGHT * TILE_HEIGHT * SCALE
     );
     this.camera.startFollow(this);
 
     this.position = position;
 
     this.sound = scene.sound;
-    this.x = position.x * SCALE * TILE_WIDTH + TILE_WIDTH / 2;
-    this.y = position.y * SCALE * TILE_HEIGHT + TILE_HEIGHT / 2;
+    this.x = this.positionToPixels(this.position.x, TILE_WIDTH);
+    this.y = this.positionToPixels(this.position.y, TILE_HEIGHT);
     this.direction = Directions.DOWN;
 
     this.play("idleDown");
@@ -65,29 +64,34 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.play("walkUp", true);
     this.direction = Directions.UP;
     this.position.y--;
+    this.isMoving = true;
   }
 
   walkDown() {
     this.play("walkDown", true);
     this.direction = Directions.DOWN;
     this.position.y++;
+    this.isMoving = true;
   }
 
   walkLeft() {
     this.play("walkLeft", true);
     this.direction = Directions.LEFT;
     this.position.x--;
+    this.isMoving = true;
   }
 
   walkRight() {
     this.play("walkRight", true);
     this.direction = Directions.RIGHT;
     this.position.x++;
+    this.isMoving = true;
   }
 
   doAction() {}
 
   stop() {
+    console.info("STOP");
     this.isMoving = false;
     this.body.stop();
     switch (this.direction) {
@@ -112,26 +116,27 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   move(path) {
     this.currentPath = path;
-    this.isMoving = true;
 
     // Remove first always
     this.currentPath.shift();
   }
 
   updatePosition() {
-    if (this.x > this.position.x * SCALE * TILE_WIDTH + TILE_WIDTH / 2) {
-      this.x -= SCALE;
-    } else if (this.x < this.position.x * SCALE * TILE_WIDTH + TILE_WIDTH / 2) {
-      this.x += SCALE;
-    }
-
-    if (this.y > this.position.y * SCALE * TILE_HEIGHT + TILE_HEIGHT / 2) {
-      this.y -= SCALE;
-    } else if (
-      this.y <
-      this.position.y * SCALE * TILE_HEIGHT + TILE_HEIGHT / 2
-    ) {
-      this.y += SCALE;
+    if (this.isMoving) {
+      switch (this.direction) {
+        case Directions.LEFT:
+          this.x -= SCALE;
+          break;
+        case Directions.RIGHT:
+          this.x += SCALE;
+          break;
+        case Directions.UP:
+          this.y -= SCALE;
+          break;
+        case Directions.DOWN:
+          this.y += SCALE;
+          break;
+      }
     }
   }
 
@@ -144,6 +149,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     if (!this.isMoving && this.currentPath.length > 0) {
       this.nextStep = this.currentPath.shift();
+      console.info(this.nextStep);
       if (this.nextStep?.x > this.position.x) {
         this.walkRight();
       } else if (this.nextStep?.x < this.position.x) {
@@ -155,18 +161,33 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    this.updatePosition();
+    if (this.isMoving) {
+      // Update player position
+      this.updatePosition();
 
-    if (this.isMoving && this.nextStep === undefined) {
-      this.stop();
-    }
+      // Check player position
+      if (this.playerAtPosition(this.x, this.y)) {
+        // Move player to exact tile position
+        this.x = this.positionToPixels(this.position.x, TILE_WIDTH);
+        this.y = this.positionToPixels(this.position.y, TILE_HEIGHT);
 
-    if (
-      this.position.x === this.nextStep?.x &&
-      this.position.y === this.nextStep?.y
-    ) {
-      this.isMoving = false;
+        // Stopping on each step
+        if (this.currentPath.length === 0) {
+          this.stop();
+        } else {
+          this.isMoving = false;
+        }
+      }
     }
+  }
+
+  playerAtPosition(x, y) {
+    return Math.abs(this.positionToPixels(this.position.x, TILE_WIDTH)  - x) < SCALE &&
+           Math.abs(this.positionToPixels(this.position.y, TILE_HEIGHT) - y) < SCALE;
+  }
+
+  positionToPixels(coord, tileSize) {
+    return coord * SCALE * tileSize;
   }
 
   handleClick(pointer) {
@@ -180,22 +201,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     let pointerTileX = this.scene.map.worldToTileX(x);
     let pointerTileY = this.scene.map.worldToTileY(y);
-    this.scene.destination.x = this.scene.map.tileToWorldX(pointerTileX);
-    this.scene.destination.y = this.scene.map.tileToWorldY(pointerTileY);
-    this.scene.destination.setVisible(true);
+    if (!this.scene.checkCollision(pointerTileX, pointerTileY)) {
+      this.scene.destination.x = this.scene.map.tileToWorldX(pointerTileX);
+      this.scene.destination.y = this.scene.map.tileToWorldY(pointerTileY);
+      this.scene.destination.setVisible(true);
 
-    console.log(
-      "going from (" + fromX + "," + fromY + ") to (" + toX + "," + toY + ")"
-    );
-    this.finder.findPath(fromX, fromY, toX, toY, function (path) {
-      if (path === null) {
-        console.warn("Path was not found.");
-      } else {
-        console.log(path);
-        player.move(path);
-      }
-    });
-    this.finder.calculate();
+      console.log("going from (" + fromX + "," + fromY + ") to (" + toX + "," + toY + ")");
+      this.finder.findPath(fromX, fromY, toX, toY, function (path) {
+        if (path === null) {
+          console.warn("Path was not found.");
+        } else {
+          console.log(path);
+          player.move(path);
+        }
+      });
+      this.finder.calculate();
+    }
   }
 }
 

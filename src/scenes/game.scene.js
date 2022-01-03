@@ -1,14 +1,11 @@
 import Phaser from "phaser";
 
 import {
-  SCREEN_WIDTH,
-  SCREEN_HEIGHT,
   TOWN_WIDTH,
   TOWN_HEIGHT,
   TILE_WIDTH,
   TILE_HEIGHT,
-  SCALE,
-  Town,
+  SCALE
 } from "../constants/game.constants";
 import Player from "../actors/player.actor";
 
@@ -18,15 +15,16 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    let stage = this;
     this.map = this.make.tilemap({
+      key: 'city',
       tileWidth: TILE_WIDTH,
       tileHeight: TILE_HEIGHT,
       width: TOWN_WIDTH,
       height: TOWN_HEIGHT,
     });
-    this.tileset = this.map.addTilesetImage("town", "basic", 16, 16, 0, 0);
-    this.layer = this.map.createBlankLayer("Layer 1", this.tileset);
-    this.layer.fill(49);
+    this.tileset = this.map.addTilesetImage("urban", "urban", 16, 16, 0, 1);
+    this.layers = ["Collision", "Background", "Base", "Buildings", "Details"].map(layer => stage.map.createLayer(layer, stage.tileset))
 
     // Marker that will follow the mouse
     this.marker = this.add.graphics();
@@ -45,7 +43,7 @@ export default class Game extends Phaser.Scene {
     });
 
     this.player.setScale(SCALE);
-    this.layer.setScale(SCALE);
+    this.layers.forEach(layer => layer.setScale(SCALE));
     this.marker.setScale(SCALE);
     this.destination.setScale(SCALE);
     this.start();
@@ -67,6 +65,8 @@ export default class Game extends Phaser.Scene {
   }
 
   checkCollision(x, y) {
-    return false;
+    let scene = this;
+    let collisionTiles = [...new Set(scene.map.getLayer("Collision").data.map(col => col.map(tile => tile.index)).flat())].filter(item => item >= 0);
+    return collisionTiles.includes(this.map.getTileAt(x, y, true, "Collision").index);
   }
 }
