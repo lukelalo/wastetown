@@ -22,7 +22,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.nextStep = undefined;
 
     this.finder = new EasyStar.js();
-    this.finder.setAcceptableTiles([-1]);
+
+    // Set acceptable tiles on pathfinder
+    let acceptableTiles = Object.entries(scene.layers["Collision"].tileset[0].tileProperties)
+      .filter(([k, v]) => !v.collide)
+      .map(([k]) => parseInt(k, 10) + 1);
+    this.finder.setAcceptableTiles([-1, ...acceptableTiles]);
+
+    // Set path cost
+    let player = this;
+    Object.entries(scene.layers["Collision"].tileset[0].tileProperties)
+      .filter(([k, v]) => v.cost)
+      .forEach(([k, v]) => player.finder.setTileCost(parseInt(k, 10) + 1, v.cost));
+
     let grid = [];
     for (let y = 0; y < TOWN_HEIGHT; y++) {
       let col = [];

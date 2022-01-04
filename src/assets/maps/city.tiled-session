@@ -6,6 +6,7 @@
     "activeFile": "",
     "expandedProjectPaths": [
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
             "scaleInDock": 1,
@@ -44,7 +45,8 @@
             "scaleInDock": 1.5
         },
         "city.json#urban": {
-            "scaleInDock": 1.5
+            "scaleInDock": 1.5,
+            "scaleInEditor": 1
         },
         "city.json#water": {
             "scaleInDock": 1.5
@@ -62,6 +64,7 @@
     "openFiles": [
     ],
     "project": "city.tiled-project",
+    "property.type": "int",
     "recentFiles": [
         "city.json",
         "/Users/pablojaviergarciamora/Downloads/map.json"
