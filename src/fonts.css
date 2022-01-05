@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'GoodBrush';
+  src: url('assets/fonts/Good-Brush.ttf') format('truetype');
+  font-weight:400;
+  font-weight:normal;
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  src: url('assets/fonts/orbitron-light-webfont.ttf') format('truetype');
+  font-weight:200;
+  font-weight:normal;
+}

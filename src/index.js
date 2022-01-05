@@ -3,6 +3,7 @@ import bootScene from "./scenes/boot.scene";
 import preloaderScene from "./scenes/preloader.scene";
 import menuScene from "./scenes/menu.scene";
 import gameScene from "./scenes/game.scene";
+import './fonts.css';
 
 const config = {
   type: Phaser.AUTO,

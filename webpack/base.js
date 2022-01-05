@@ -23,7 +23,21 @@ module.exports = {
         test: /\.(gif|png|jpe?g|svg|xml)$/i,
         use: "file-loader",
       },
-    ],
+      {
+        test: /\.css$/,
+        use: [
+          { loader: 'style-loader'},
+          { loader: 'css-loader'}
+        ]
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+        type: 'asset/resource',
+        generator: {
+            filename: './fonts/[name][ext]',
+        },
+      },
+    ]
   },
   plugins: [
     new CleanWebpackPlugin({

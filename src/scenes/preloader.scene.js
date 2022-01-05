@@ -18,7 +18,7 @@ export default class Preloader extends Phaser.Scene {
       SCREEN_WIDTH / 2,
       SCREEN_HEIGHT / 2,
       "Loading ...",
-      { fontFamily: "Arial", fontSize: 74, color: "#e3f2ed" }
+      { fontFamily: "Orbitron", fontSize: 30, color: "#e3f2ed" }
     );
     this.text.setOrigin(0.5, 0.5);
     this.text.setStroke("#203c5b", 6);

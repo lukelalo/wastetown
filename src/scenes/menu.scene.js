@@ -18,7 +18,7 @@ export default class Menu extends Phaser.Scene {
       SCREEN_WIDTH / 2,
       SCREEN_HEIGHT / 4,
       "Wastetown",
-      { fontFamily: "Arial", fontSize: 74, color: "#e3f2ed" }
+      { fontFamily: "GoodBrush", fontSize: 150, color: "#e3f2ed" }
     );
     title.setOrigin(0.5, 0.5);
     title.setStroke("#203c5b", 6);
@@ -27,8 +27,8 @@ export default class Menu extends Phaser.Scene {
     const newGame = this.add.text(
       SCREEN_WIDTH / 2,
       SCREEN_HEIGHT / 2,
-      "New Game",
-      { fontFamily: "Arial", fontSize: 40, color: "#e3f2ed" }
+      "New game",
+      { fontFamily: "Orbitron", fontSize: 30, color: "#e3f2ed" }
     );
     newGame.setOrigin(0.5, 0.5);
     newGame.setStroke("#203c5b", 6);

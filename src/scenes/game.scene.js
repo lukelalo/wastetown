@@ -24,7 +24,7 @@ export default class Game extends Phaser.Scene {
       height: TOWN_HEIGHT,
     });
     this.tileset = this.map.addTilesetImage("urban", "urban", 16, 16, 0, 1);
-    this.layers = ["Collision", "Background", "Base", "Buildings", "Details", "Top"].reduce((all, layer) => ({...all, [layer]: stage.map.createLayer(layer, stage.tileset)}), {});
+    this.layers = ["Collision", "Background", "Buildings", "Details", "Top"].reduce((all, layer) => ({...all, [layer]: stage.map.createLayer(layer, stage.tileset)}), {});
 
     // Marker that will follow the mouse
     this.marker = this.add.graphics();
@@ -46,6 +46,20 @@ export default class Game extends Phaser.Scene {
     Object.values(this.layers).forEach(layer => layer.setScale(SCALE));
     // Set top layer on top
     this.layers["Top"].setDepth(10);
+    // Set collision on layer
+    this.layers["Collision"].setCollisionByProperty({ collide: true });
+
+    // Create worldLayer collision graphic above the player, but below the help text
+    if (this.game.config.physics.arcade.debug) {
+      const graphics = this.add.graphics().setAlpha(0.75).setDepth(20);
+      this.layers["Collision"].renderDebug(graphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
+      });
+    }
+
+
     this.marker.setScale(SCALE);
     this.destination.setScale(SCALE);
     this.start();
