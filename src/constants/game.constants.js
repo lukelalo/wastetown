@@ -6,6 +6,11 @@ export const TILE_WIDTH = 16;
 export const TILE_HEIGHT = 16;
 export const SCALE = 2;
 export const STEP = 1;
+export const COLLISION = "Collision";
+export const BACKGROUND = "Background";
+export const BUILDINGS = "Buildings";
+export const DETAILS = "Details";
+export const TOP = "Top";
 
 export const Directions = {
   UP: "UP",

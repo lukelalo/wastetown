@@ -6,7 +6,6 @@ import {
   TILE_WIDTH,
   SCALE,
 } from "../constants/game.constants";
-import EasyStar from "easystarjs";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, position) {
@@ -20,30 +19,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isMoving = false;
     this.currentPath = [];
     this.nextStep = undefined;
-
-    this.finder = new EasyStar.js();
-
-    // Set acceptable tiles on pathfinder
-    let acceptableTiles = Object.entries(scene.layers["Collision"].tileset[0].tileProperties)
-      .filter(([k, v]) => !v.collide)
-      .map(([k]) => parseInt(k, 10) + 1);
-    this.finder.setAcceptableTiles([-1, ...acceptableTiles]);
-
-    // Set path cost
-    let player = this;
-    Object.entries(scene.layers["Collision"].tileset[0].tileProperties)
-      .filter(([k, v]) => v.cost)
-      .forEach(([k, v]) => player.finder.setTileCost(parseInt(k, 10) + 1, v.cost));
-
-    let grid = [];
-    for (let y = 0; y < TOWN_HEIGHT; y++) {
-      let col = [];
-      for (let x = 0; x < TOWN_WIDTH; x++) {
-        col.push(scene.map.getTileAt(x, y, true, "Collision").index);
-      }
-      grid.push(col);
-    }
-    this.finder.setGrid(grid);
 
     this.camera = scene.cameras.main;
     this.camera.setBounds(
@@ -62,6 +37,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.direction = Directions.DOWN;
 
     this.play("idleDown");
+  }
+
+  setFinder(finder) {
+    this.finder = finder;
   }
 
   start() {
@@ -194,8 +173,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   playerAtPosition(x, y) {
-    return Math.abs(this.positionToPixels(this.position.x, TILE_WIDTH)  - x) < SCALE &&
-           Math.abs(this.positionToPixels(this.position.y, TILE_HEIGHT) - y) < SCALE;
+    return (
+      Math.abs(this.positionToPixels(this.position.x, TILE_WIDTH) - x) <
+        SCALE &&
+      Math.abs(this.positionToPixels(this.position.y, TILE_HEIGHT) - y) < SCALE
+    );
   }
 
   positionToPixels(coord, tileSize) {
@@ -218,7 +200,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.scene.destination.y = this.scene.map.tileToWorldY(pointerTileY);
       this.scene.destination.setVisible(true);
 
-      console.log("going from (" + fromX + "," + fromY + ") to (" + toX + "," + toY + ")");
+      console.log(
+        "going from (" + fromX + "," + fromY + ") to (" + toX + "," + toY + ")"
+      );
       this.finder.findPath(fromX, fromY, toX, toY, function (path) {
         if (path === null) {
           console.warn("Path was not found.");
