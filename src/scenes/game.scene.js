@@ -16,6 +16,7 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    this.store = this.game.store;
     let stage = this;
     this.map = this.make.tilemap({ key: "city" });
     this.scale = this.getProperty(this.map, "scale");
@@ -162,6 +163,7 @@ export default class Game extends Phaser.Scene {
   }
 
   movePlayer({ x, y }) {
+    this.store.dispatch({ type: "MOVE_PLAYER", payload: { x, y } });
     const player = this.player;
     const fromX = player.position.x;
     const fromY = player.position.y;

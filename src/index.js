@@ -3,7 +3,8 @@ import bootScene from "./scenes/boot.scene";
 import preloaderScene from "./scenes/preloader.scene";
 import menuScene from "./scenes/menu.scene";
 import gameScene from "./scenes/game.scene";
-import './fonts.css';
+import Game from "./game/main.game";
+import "./fonts.css";
 
 const config = {
   type: Phaser.AUTO,
@@ -18,4 +19,4 @@ const config = {
   },
 };
 
-const game = new Phaser.Game(config);
+const game = new Game(config);
