@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import logoImg from "../assets/images/phaserLogo.png";
-import townImg from "../assets/tilesets/town.png";
 import basicImg from "../assets/tilesets/basic.png";
 import urbanTileset from "../assets/tilesets/urban.png";
 import cityMap from "../assets/maps/city.json";
@@ -25,15 +24,14 @@ export default class Preloader extends Phaser.Scene {
     this.text.setShadow(2, 2, "#2d2d2d", 4, true, false);
 
     this.load.image("logo", logoImg);
-    this.load.image("town", townImg);
     this.load.image("basic", basicImg);
     this.load.atlas("player", playerPng, playerJson);
 
     // load the PNG file
-	  this.load.image('urban', urbanTileset);
+    this.load.image("urban", urbanTileset);
 
-	  // load the JSON file
-	  this.load.tilemapTiledJSON('city', cityMap);
+    // load the JSON file
+    this.load.tilemapTiledJSON("city", cityMap);
   }
 
   create() {

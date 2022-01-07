@@ -1,14 +1,12 @@
-import {
-  Directions,
-} from "../constants/game.constants";
+import { Directions } from "../constants/game.constants";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, position) {
     super(scene, position.x, position.y, "player", "walkDown000");
     this.setOrigin(0, 0);
 
-    scene.add.existing(this);
-    scene.physics.add.existing(this);
+    this.scene.add.existing(this);
+    this.scene.physics.add.existing(this);
     this.isAlive = true;
     this.isActing = false;
     this.isMoving = false;
@@ -18,8 +16,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.position = position;
 
     this.sound = scene.sound;
-    this.x = this.positionToPixels(this.position.x, scene.map.tileWidth);
-    this.y = this.positionToPixels(this.position.y, scene.map.tileHeight);
+    this.moveToExactPosition();
     this.direction = Directions.DOWN;
 
     this.play("idleDown");
@@ -139,8 +136,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       // Check player position
       if (this.playerAtPosition(this.x, this.y)) {
         // Move player to exact tile position
-        this.x = this.positionToPixels(this.position.x, this.scene.map.tileWidth);
-        this.y = this.positionToPixels(this.position.y, this.scene.map.tileHeight);
+        this.moveToExactPosition();
 
         // Stopping on each step
         if (this.currentPath.length === 0) {
@@ -152,10 +148,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  moveToExactPosition() {
+    this.x = this.positionToPixels(this.position.x, this.scene.map.tileWidth);
+    this.y = this.positionToPixels(this.position.y, this.scene.map.tileHeight);
+  }
+
   playerAtPosition(x, y) {
     return (
-      Math.abs(this.positionToPixels(this.position.x, this.scene.map.tileWidth) - x)  < this.scene.scale &&
-      Math.abs(this.positionToPixels(this.position.y, this.scene.map.tileHeight) - y) < this.scene.scale
+      Math.abs(
+        this.positionToPixels(this.position.x, this.scene.map.tileWidth) - x
+      ) < this.scene.scale &&
+      Math.abs(
+        this.positionToPixels(this.position.y, this.scene.map.tileHeight) - y
+      ) < this.scene.scale
     );
   }
 

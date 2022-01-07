@@ -17,18 +17,23 @@ export default class Game extends Phaser.Scene {
 
   create() {
     let stage = this;
-    this.map = this.make.tilemap({key: "city"});
+    this.map = this.make.tilemap({ key: "city" });
     this.scale = this.getProperty(this.map, "scale");
     this.tileset = this.map.addTilesetImage("urban", "urban", 16, 16, 0, 1);
+    const TILE_WIDTH = this.map.tileWidth;
+    const TILE_HEIGHT = this.map.tileHeight;
 
     // Layers
-    this.layers = this.map.layers
-      .map(layer => ({id: layer.name, data: layer, layer: stage.map.createLayer(layer.name, stage.tileset)}));
-    this.layers.forEach(({ data, layer }) => layer
-      .setScale(this.scale)
-      .setCollisionByProperty({collide: true})
-      .setVisible(this.getProperty(data, "visible", true))
-      .setDepth(this.getProperty(data, "depth", 0)));
+    this.layers = this.map.layers.map((data) => {
+      const id = data.name;
+      const layer = stage.map.createLayer(id, stage.tileset);
+      layer
+        .setScale(this.scale)
+        .setCollisionByProperty({ collide: true })
+        .setVisible(this.getProperty(data, "visible", true))
+        .setDepth(this.getProperty(data, "depth", 0));
+      return { id, data, layer };
+    });
 
     // Create worldLayer collision graphic above the player, but below the help text
     if (this.game.config.physics.arcade.debug) {
@@ -46,26 +51,26 @@ export default class Game extends Phaser.Scene {
     // Marker that will follow the mouse
     this.marker = this.add.graphics();
     this.marker.lineStyle(1, 0xffffff, 1);
-    //this.marker.strokeRect(0, 0, this.map.tileWidth, this.map.tileHeight);
-    this.marker.lineBetween(5, 5, this.map.tileWidth - 5, this.map.tileHeight - 5);
-    this.marker.lineBetween(this.map.tileWidth - 5, 5, 5, this.map.tileHeight - 5);
+    //this.marker.strokeRect(0, 0, TILE_WIDTH, TILE_HEIGHT);
+    this.marker.lineBetween(5, 5, TILE_WIDTH - 5, TILE_HEIGHT - 5);
+    this.marker.lineBetween(TILE_WIDTH - 5, 5, 5, TILE_HEIGHT - 5);
     /*this.marker.strokeCircle(
-      this.map.tileWidth / 2,
-      this.map.tileHeight / 2,
-      this.map.tileWidth / 2 - 3
+      TILE_WIDTH / 2,
+      TILE_HEIGHT / 2,
+      TILE_WIDTH / 2 - 3
     );*/
     this.marker.setScale(this.scale);
 
     // Marker to show player destination
     this.destination = this.add.graphics();
     this.destination.lineStyle(1, 0xffff00, 1);
-    //this.destination.strokeRect(0, 0, this.map.tileWidth, this.map.tileHeight);
-    this.destination.lineBetween(5, 5, this.map.tileWidth - 5, this.map.tileHeight - 5);
-    this.destination.lineBetween(this.map.tileWidth - 5, 5, 5, this.map.tileHeight - 5);
+    //this.destination.strokeRect(0, 0, TILE_WIDTH, TILE_HEIGHT);
+    this.destination.lineBetween(5, 5, TILE_WIDTH - 5, TILE_HEIGHT - 5);
+    this.destination.lineBetween(TILE_WIDTH - 5, 5, 5, TILE_HEIGHT - 5);
     /*this.destination.strokeCircle(
-      this.map.tileWidth / 2,
-      this.map.tileHeight / 2,
-      this.map.tileWidth / 2 - 3
+      TILE_WIDTH / 2,
+      TILE_HEIGHT / 2,
+      TILE_WIDTH / 2 - 3
     );*/
     this.destination.setVisible(false);
     this.destination.setScale(this.scale);
@@ -85,7 +90,9 @@ export default class Game extends Phaser.Scene {
     // Set path cost
     Object.entries(collisionLayer.tileset[0].tileProperties)
       .filter(([k, v]) => v.cost)
-      .forEach(([k, v]) => stage.finder.setTileCost(parseInt(k, 10) + 1, v.cost));
+      .forEach(([k, v]) =>
+        stage.finder.setTileCost(parseInt(k, 10) + 1, v.cost)
+      );
 
     const grid = [];
     for (let y = 0; y < this.map.height; y++) {
@@ -98,10 +105,7 @@ export default class Game extends Phaser.Scene {
     this.finder.setGrid(grid);
 
     // Player
-    this.player = new Player(this, {
-      x: 12,
-      y: 19,
-    });
+    this.player = new Player(this, { x: 12, y: 19 });
     this.player.setScale(this.scale);
 
     // Camera
@@ -109,8 +113,8 @@ export default class Game extends Phaser.Scene {
     this.camera.setBounds(
       0,
       0,
-      this.map.width * this.map.tileWidth * this.scale,
-      this.map.height * this.map.tileHeight * this.scale
+      this.map.width * TILE_WIDTH * this.scale,
+      this.map.height * TILE_HEIGHT * this.scale
     );
     this.camera.startFollow(this.player);
 
@@ -118,7 +122,9 @@ export default class Game extends Phaser.Scene {
   }
 
   getProperty(item, propertyName, defaultValue) {
-    let property = item.properties.find(property => property.name === propertyName);
+    let property = item.properties.find(
+      (property) => property.name === propertyName
+    );
     return property === undefined ? defaultValue : property.value;
   }
 

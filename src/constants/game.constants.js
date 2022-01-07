@@ -14,12 +14,3 @@ export const Directions = {
   LEFT: "LEFT",
   RIGHT: "RIGHT",
 };
-
-export const Town = {
-  FLOOR: [
-    {
-      index: 174,
-      weigth: 1,
-    },
-  ],
-};
