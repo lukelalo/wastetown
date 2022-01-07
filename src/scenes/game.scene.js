@@ -1,11 +1,6 @@
 import Phaser from "phaser";
 
 import {
-  TOWN_WIDTH,
-  TOWN_HEIGHT,
-  TILE_WIDTH,
-  TILE_HEIGHT,
-  SCALE,
   COLLISION,
   BACKGROUND,
   BUILDINGS,
@@ -22,13 +17,8 @@ export default class Game extends Phaser.Scene {
 
   create() {
     let stage = this;
-    this.map = this.make.tilemap({
-      key: "city",
-      tileWidth: TILE_WIDTH,
-      tileHeight: TILE_HEIGHT,
-      width: TOWN_WIDTH,
-      height: TOWN_HEIGHT,
-    });
+    this.map = this.make.tilemap({key: "city"});
+    this.scale = this.map.properties.find(property => property.name === "scale").value;
     this.tileset = this.map.addTilesetImage("urban", "urban", 16, 16, 0, 1);
 
     // Layers
@@ -38,7 +28,7 @@ export default class Game extends Phaser.Scene {
         layer: stage.map.createLayer(id, stage.tileset),
       })
     );
-    this.layers.forEach(({ layer }) => layer.setScale(SCALE));
+    this.layers.forEach(({ layer }) => layer.setScale(this.scale));
 
     // Set top layer on top
     this.layers.find(({ id }) => id === TOP).layer.setDepth(10);
@@ -68,7 +58,7 @@ export default class Game extends Phaser.Scene {
       (4 * this.map.tileHeight) / 5,
       1
     );
-    this.marker.setScale(SCALE);
+    this.marker.setScale(this.scale);
 
     // Marker to show player destination
     this.destination = this.add.graphics();
@@ -80,10 +70,10 @@ export default class Game extends Phaser.Scene {
       1
     );
     this.destination.setVisible(false);
-    this.destination.setScale(SCALE);
+    this.destination.setScale(this.scale);
 
     // Finder
-    const finder = new EasyStar.js();
+    this.finder = new EasyStar.js();
 
     // Set acceptable tiles on pathfinder
     const acceptableTiles = Object.entries(
@@ -91,38 +81,45 @@ export default class Game extends Phaser.Scene {
     )
       .filter(([k, v]) => !v.collide)
       .map(([k]) => parseInt(k, 10) + 1);
-    finder.setAcceptableTiles([-1, ...acceptableTiles]);
+    this.finder.setAcceptableTiles([-1, ...acceptableTiles]);
 
     // Set path cost
     Object.entries(collisionLayer.tileset[0].tileProperties)
       .filter(([k, v]) => v.cost)
-      .forEach(([k, v]) => finder.setTileCost(parseInt(k, 10) + 1, v.cost));
+      .forEach(([k, v]) => stage.finder.setTileCost(parseInt(k, 10) + 1, v.cost));
 
     const grid = [];
-    for (let y = 0; y < TOWN_HEIGHT; y++) {
+    for (let y = 0; y < this.map.height; y++) {
       let col = [];
-      for (let x = 0; x < TOWN_WIDTH; x++) {
+      for (let x = 0; x < this.map.width; x++) {
         col.push(this.map.getTileAt(x, y, true, COLLISION).index);
       }
       grid.push(col);
     }
-    finder.setGrid(grid);
+    this.finder.setGrid(grid);
 
     // Player
     this.player = new Player(this, {
       x: 12,
       y: 19,
     });
-    this.player.setScale(SCALE);
-    this.player.setFinder(finder);
+    this.player.setScale(this.scale);
+
+    // Camera
+    this.camera = this.cameras.main;
+    this.camera.setBounds(
+      0,
+      0,
+      this.map.width * this.map.tileWidth * this.scale,
+      this.map.height * this.map.tileHeight * this.scale
+    );
+    this.camera.startFollow(this.player);
 
     this.start();
   }
 
   update() {
-    var worldPoint = this.input.activePointer.positionToCamera(
-      this.cameras.main
-    );
+    var worldPoint = this.input.activePointer.positionToCamera(this.camera);
 
     // Rounds down to nearest tile
     var pointerTileX = this.map.worldToTileX(worldPoint.x);
@@ -134,6 +131,38 @@ export default class Game extends Phaser.Scene {
 
   start() {
     this.player.start();
+    this.input.on("pointerup", this.handleClick, this);
+  }
+
+  handleClick(pointer) {
+    let player = this.player;
+    let x = this.camera.scrollX + pointer.x;
+    let y = this.camera.scrollY + pointer.y;
+    let toX = Math.floor(x / (this.map.tileWidth * this.scale));
+    let toY = Math.floor(y / (this.map.tileHeight * this.scale));
+    let fromX = Math.floor(player.x / (this.map.tileWidth * this.scale));
+    let fromY = Math.floor(player.y / (this.map.tileHeight * this.scale));
+
+    let pointerTileX = this.map.worldToTileX(x);
+    let pointerTileY = this.map.worldToTileY(y);
+    if (!this.checkCollision(pointerTileX, pointerTileY)) {
+      this.destination.x = this.map.tileToWorldX(pointerTileX);
+      this.destination.y = this.map.tileToWorldY(pointerTileY);
+      this.destination.setVisible(true);
+
+      console.log(
+        "going from (" + fromX + "," + fromY + ") to (" + toX + "," + toY + ")"
+      );
+      this.finder.findPath(fromX, fromY, toX, toY, function (path) {
+        if (path === null) {
+          console.warn("Path was not found.");
+        } else {
+          console.log(path);
+          player.move(path);
+        }
+      });
+      this.finder.calculate();
+    }
   }
 
   checkCollision(x, y) {

@@ -1,10 +1,5 @@
 import {
   Directions,
-  TOWN_HEIGHT,
-  TOWN_WIDTH,
-  TILE_HEIGHT,
-  TILE_WIDTH,
-  SCALE,
 } from "../constants/game.constants";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -20,34 +15,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.currentPath = [];
     this.nextStep = undefined;
 
-    this.camera = scene.cameras.main;
-    this.camera.setBounds(
-      0,
-      0,
-      TOWN_WIDTH * TILE_WIDTH * SCALE,
-      TOWN_HEIGHT * TILE_HEIGHT * SCALE
-    );
-    this.camera.startFollow(this);
-
     this.position = position;
 
     this.sound = scene.sound;
-    this.x = this.positionToPixels(this.position.x, TILE_WIDTH);
-    this.y = this.positionToPixels(this.position.y, TILE_HEIGHT);
+    this.x = this.positionToPixels(this.position.x, scene.map.tileWidth);
+    this.y = this.positionToPixels(this.position.y, scene.map.tileHeight);
     this.direction = Directions.DOWN;
 
     this.play("idleDown");
   }
 
-  setFinder(finder) {
-    this.finder = finder;
-  }
-
   start() {
     this.isAlive = true;
     this.isActing = false;
-    this.scene.input.on("pointerup", this.handleClick, this);
-
     this.play("idleDown", true);
   }
 
@@ -116,16 +96,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.isMoving) {
       switch (this.direction) {
         case Directions.LEFT:
-          this.x -= SCALE;
+          this.x -= this.scene.scale;
           break;
         case Directions.RIGHT:
-          this.x += SCALE;
+          this.x += this.scene.scale;
           break;
         case Directions.UP:
-          this.y -= SCALE;
+          this.y -= this.scene.scale;
           break;
         case Directions.DOWN:
-          this.y += SCALE;
+          this.y += this.scene.scale;
           break;
       }
     }
@@ -159,8 +139,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       // Check player position
       if (this.playerAtPosition(this.x, this.y)) {
         // Move player to exact tile position
-        this.x = this.positionToPixels(this.position.x, TILE_WIDTH);
-        this.y = this.positionToPixels(this.position.y, TILE_HEIGHT);
+        this.x = this.positionToPixels(this.position.x, this.scene.map.tileWidth);
+        this.y = this.positionToPixels(this.position.y, this.scene.map.tileHeight);
 
         // Stopping on each step
         if (this.currentPath.length === 0) {
@@ -174,45 +154,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   playerAtPosition(x, y) {
     return (
-      Math.abs(this.positionToPixels(this.position.x, TILE_WIDTH) - x) <
-        SCALE &&
-      Math.abs(this.positionToPixels(this.position.y, TILE_HEIGHT) - y) < SCALE
+      Math.abs(this.positionToPixels(this.position.x, this.scene.map.tileWidth) - x)  < this.scene.scale &&
+      Math.abs(this.positionToPixels(this.position.y, this.scene.map.tileHeight) - y) < this.scene.scale
     );
   }
 
   positionToPixels(coord, tileSize) {
-    return coord * SCALE * tileSize;
-  }
-
-  handleClick(pointer) {
-    let player = this;
-    let x = this.camera.scrollX + pointer.x;
-    let y = this.camera.scrollY + pointer.y;
-    let toX = Math.floor(x / (TILE_WIDTH * SCALE));
-    let toY = Math.floor(y / (TILE_HEIGHT * SCALE));
-    let fromX = Math.floor(this.x / (TILE_WIDTH * SCALE));
-    let fromY = Math.floor(this.y / (TILE_HEIGHT * SCALE));
-
-    let pointerTileX = this.scene.map.worldToTileX(x);
-    let pointerTileY = this.scene.map.worldToTileY(y);
-    if (!this.scene.checkCollision(pointerTileX, pointerTileY)) {
-      this.scene.destination.x = this.scene.map.tileToWorldX(pointerTileX);
-      this.scene.destination.y = this.scene.map.tileToWorldY(pointerTileY);
-      this.scene.destination.setVisible(true);
-
-      console.log(
-        "going from (" + fromX + "," + fromY + ") to (" + toX + "," + toY + ")"
-      );
-      this.finder.findPath(fromX, fromY, toX, toY, function (path) {
-        if (path === null) {
-          console.warn("Path was not found.");
-        } else {
-          console.log(path);
-          player.move(path);
-        }
-      });
-      this.finder.calculate();
-    }
+    return coord * this.scene.scale * tileSize;
   }
 }
 
