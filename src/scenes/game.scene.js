@@ -145,16 +145,14 @@ export default class Game extends Phaser.Scene {
   }
 
   handleClick(pointer) {
-    const x = this.camera.scrollX + pointer.x;
-    const y = this.camera.scrollY + pointer.y;
-    const pointerTileX = this.map.worldToTileX(x);
-    const pointerTileY = this.map.worldToTileY(y);
+    const x = this.map.worldToTileX(this.camera.scrollX + pointer.x);
+    const y = this.map.worldToTileX(this.camera.scrollY + pointer.y);
 
-    if (!this.checkCollision(pointerTileX, pointerTileY)) {
-      this.movePlayer({ x: pointerTileX, y: pointerTileY });
+    if (!this.checkCollision(x, y)) {
+      this.movePlayer({ x, y });
     } else {
       // Tile with collision, could be interactive
-      if (pointerTileX === 12 && pointerTileY === 18) {
+      if (x === 12 && y === 18) {
         console.log("TRASH");
         // We should move the player to {12, 20} and then execute action
         this.movePlayer({ x: 12, y: 19 });
