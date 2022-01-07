@@ -32,10 +32,10 @@
         },
         "city.json": {
             "scale": 1.5,
-            "selectedLayer": 0,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 443,
-                "y": 409.66666666666663
+                "x": 586.3333333333333,
+                "y": 491
             }
         },
         "city.json#basic": {
