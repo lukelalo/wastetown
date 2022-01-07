@@ -151,6 +151,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   moveToExactPosition() {
     this.x = this.positionToPixels(this.position.x, this.scene.map.tileWidth);
     this.y = this.positionToPixels(this.position.y, this.scene.map.tileHeight);
+    this.scene.playerAtPosition({ x: this.position.x, y: this.position.y });
   }
 
   playerAtPosition(x, y) {

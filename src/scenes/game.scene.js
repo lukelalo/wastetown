@@ -183,6 +183,10 @@ export default class Game extends Phaser.Scene {
     this.finder.calculate();
   }
 
+  playerAtPosition({ x, y }) {
+    this.store.dispatch({ type: "PLAYER_POSITION", payload: { x, y } });
+  }
+
   checkCollision(x, y) {
     const collisionLayer = this.layers.find(({ id }) => id === COLLISION).layer;
     let collisionTiles = Object.entries(
