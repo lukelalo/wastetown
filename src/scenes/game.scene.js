@@ -18,23 +18,17 @@ export default class Game extends Phaser.Scene {
   create() {
     let stage = this;
     this.map = this.make.tilemap({key: "city"});
-    this.scale = this.map.properties.find(property => property.name === "scale").value;
+    this.scale = this.getProperty(this.map, "scale");
     this.tileset = this.map.addTilesetImage("urban", "urban", 16, 16, 0, 1);
 
     // Layers
-    this.layers = [COLLISION, BACKGROUND, BUILDINGS, DETAILS, TOP].map(
-      (id) => ({
-        id,
-        layer: stage.map.createLayer(id, stage.tileset),
-      })
-    );
-    this.layers.forEach(({ layer }) => layer.setScale(this.scale));
-
-    // Set top layer on top
-    this.layers.find(({ id }) => id === TOP).layer.setDepth(10);
-    // Set collision on layer
-    const collisionLayer = this.layers.find(({ id }) => id === COLLISION).layer;
-    collisionLayer.setCollisionByProperty({ collide: true });
+    this.layers = this.map.layers
+      .map(layer => ({id: layer.name, data: layer, layer: stage.map.createLayer(layer.name, stage.tileset)}));
+    this.layers.forEach(({ data, layer }) => layer
+      .setScale(this.scale)
+      .setCollisionByProperty({collide: true})
+      .setVisible(this.getProperty(data, "visible", true))
+      .setDepth(this.getProperty(data, "depth", 0)));
 
     // Create worldLayer collision graphic above the player, but below the help text
     if (this.game.config.physics.arcade.debug) {
@@ -53,22 +47,26 @@ export default class Game extends Phaser.Scene {
     this.marker = this.add.graphics();
     this.marker.lineStyle(1, 0xffffff, 1);
     //this.marker.strokeRect(0, 0, this.map.tileWidth, this.map.tileHeight);
-    this.marker.strokeCircle(
+    this.marker.lineBetween(5, 5, this.map.tileWidth - 5, this.map.tileHeight - 5);
+    this.marker.lineBetween(this.map.tileWidth - 5, 5, 5, this.map.tileHeight - 5);
+    /*this.marker.strokeCircle(
       this.map.tileWidth / 2,
-      (4 * this.map.tileHeight) / 5,
-      1
-    );
+      this.map.tileHeight / 2,
+      this.map.tileWidth / 2 - 3
+    );*/
     this.marker.setScale(this.scale);
 
     // Marker to show player destination
     this.destination = this.add.graphics();
     this.destination.lineStyle(1, 0xffff00, 1);
     //this.destination.strokeRect(0, 0, this.map.tileWidth, this.map.tileHeight);
-    this.destination.strokeCircle(
+    this.destination.lineBetween(5, 5, this.map.tileWidth - 5, this.map.tileHeight - 5);
+    this.destination.lineBetween(this.map.tileWidth - 5, 5, 5, this.map.tileHeight - 5);
+    /*this.destination.strokeCircle(
       this.map.tileWidth / 2,
-      (4 * this.map.tileHeight) / 5,
-      1
-    );
+      this.map.tileHeight / 2,
+      this.map.tileWidth / 2 - 3
+    );*/
     this.destination.setVisible(false);
     this.destination.setScale(this.scale);
 
@@ -76,6 +74,7 @@ export default class Game extends Phaser.Scene {
     this.finder = new EasyStar.js();
 
     // Set acceptable tiles on pathfinder
+    const collisionLayer = this.layers.find(({ id }) => id === COLLISION).layer;
     const acceptableTiles = Object.entries(
       collisionLayer.tileset[0].tileProperties
     )
@@ -116,6 +115,11 @@ export default class Game extends Phaser.Scene {
     this.camera.startFollow(this.player);
 
     this.start();
+  }
+
+  getProperty(item, propertyName, defaultValue) {
+    let property = item.properties.find(property => property.name === propertyName);
+    return property === undefined ? defaultValue : property.value;
   }
 
   update() {

@@ -44,6 +44,12 @@
          "id":6,
          "name":"Top",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"depth",
+                 "type":"int",
+                 "value":10
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":60,
@@ -56,8 +62,14 @@
          "id":5,
          "name":"Collision",
          "opacity":0.5,
+         "properties":[
+                {
+                 "name":"visible",
+                 "type":"bool",
+                 "value":false
+                }],
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":60,
          "x":0,
          "y":0
