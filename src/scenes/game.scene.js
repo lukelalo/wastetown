@@ -147,7 +147,7 @@ export default class Game extends Phaser.Scene {
 
   handleClick(pointer) {
     const x = this.map.worldToTileX(this.camera.scrollX + pointer.x);
-    const y = this.map.worldToTileX(this.camera.scrollY + pointer.y);
+    const y = this.map.worldToTileY(this.camera.scrollY + pointer.y);
 
     if (!this.checkCollision(x, y)) {
       this.movePlayer({ x, y });
