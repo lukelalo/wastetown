@@ -1,11 +1,7 @@
 import Phaser from "phaser";
 
 import {
-  COLLISION,
-  BACKGROUND,
-  BUILDINGS,
-  DETAILS,
-  TOP,
+  COLLISION
 } from "../constants/game.constants";
 import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
@@ -176,9 +172,9 @@ export default class Game extends Phaser.Scene {
   }
 
   movePlayer({ x, y }) {
-    const player = this.player;
-    const fromX = player.position.x;
-    const fromY = player.position.y;
+    const {step, position} = this.player;
+    const fromX = step ? step.x : position.x;
+    const fromY = step ? step.y : position.y;
     this.destination.x = this.map.tileToWorldX(x);
     this.destination.y = this.map.tileToWorldY(y);
     this.destination.setVisible(true);
@@ -188,7 +184,7 @@ export default class Game extends Phaser.Scene {
       if (path === null) {
         console.warn("Path was not found.");
       } else {
-        this.dispatch(actions.playerMove({ path: path.slice(1) }));
+        this.dispatch(actions.playerMove({ path: [...(step ? [step] : []), ...path.slice(1)] }));
         console.log(path);
       }
     });
@@ -207,7 +203,7 @@ export default class Game extends Phaser.Scene {
       .filter(([k, v]) => v.collide)
       .map(([k]) => k);
     return collisionTiles.includes(
-      String(this.map.getTileAt(x, y, true, COLLISION).index - 1)
+      String(this.map.getTileAt(x, y, true, COLLISION)?.index - 1)
     );
   }
 

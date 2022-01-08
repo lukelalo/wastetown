@@ -51,8 +51,8 @@ export default class Preloader extends Phaser.Scene {
       key: "idleDown",
       frames: this.anims.generateFrameNames("player", {
         prefix: "walkDown",
-        start: 2,
-        end: 2,
+        start: 0,
+        end: 0,
         zeroPad: 3,
       }),
       frameRate: 8,
@@ -87,48 +87,52 @@ export default class Preloader extends Phaser.Scene {
       key: "walkLeft",
       frames: this.anims.generateFrameNames("player", {
         prefix: "walkLeft",
-        start: 0,
+        start: 1,
         end: 3,
         zeroPad: 3,
       }),
-      frameRate: 8,
+      frameRate: 10,
       repeat: -1,
+      yoyo: true
     });
 
     this.anims.create({
       key: "walkDown",
       frames: this.anims.generateFrameNames("player", {
         prefix: "walkDown",
-        start: 0,
+        start: 1,
         end: 3,
         zeroPad: 3,
       }),
-      frameRate: 8,
+      frameRate: 10,
       repeat: -1,
+      yoyo: true
     });
 
     this.anims.create({
       key: "walkUp",
       frames: this.anims.generateFrameNames("player", {
         prefix: "walkUp",
-        start: 0,
+        start: 1,
         end: 3,
         zeroPad: 3,
       }),
-      frameRate: 8,
+      frameRate: 10,
       repeat: -1,
+      yoyo: true
     });
 
     this.anims.create({
       key: "walkRight",
       frames: this.anims.generateFrameNames("player", {
         prefix: "walkRight",
-        start: 0,
+        start: 1,
         end: 3,
         zeroPad: 3,
       }),
-      frameRate: 8,
+      frameRate: 10,
       repeat: -1,
+      yoyo: true
     });
 
     if (this.sound.locked) {

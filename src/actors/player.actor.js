@@ -10,6 +10,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.sound = scene.sound;
     this.direction = Directions.DOWN;
+    this.previousDistance = 9999;
 
     this.play("idleDown");
     this.status = Status.IDLE;
@@ -128,7 +129,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.updatePosition();
 
       // Check player position
-      if (this.playerAtPosition(this.x, this.y)) {
+      let previousDistance = this.distance;
+      this.distance = this.distanceToPosition(this.x, this.y);
+      if (this.playerAtPosition(this.distance, previousDistance)) {
+        this.distance = 9999;
         // Move player to exact tile position
         this.moveToExactPosition();
 
@@ -170,15 +174,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.playerAtPosition({ x: this.step.x, y: this.step.y });
   }
 
-  playerAtPosition(x, y) {
-    return (
-      Math.abs(
-        this.positionToPixels(this.step.x, this.scene.map.tileWidth) - x
-      ) < this.scene.scale &&
-      Math.abs(
-        this.positionToPixels(this.step.y, this.scene.map.tileHeight) - y
-      ) < this.scene.scale
-    );
+  distanceToPosition(x, y) {
+    return Phaser.Math.Distance.Chebyshev(x, y, this.positionToPixels(this.step.x, this.scene.map.tileWidth), this.positionToPixels(this.step.y, this.scene.map.tileHeight));
+  }
+
+  playerAtPosition(distance, previousDistance) {
+    return distance < this.scene.scale || distance > previousDistance;
   }
 
   positionToPixels(coord, tileSize) {
