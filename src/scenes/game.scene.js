@@ -152,7 +152,7 @@ export default class Game extends Phaser.Scene {
     this.dialog.setInteractive();
     this.dialog.setDepth(50);
     this.dialog.setDisplaySize(SCREEN_WIDTH, (2 * SCREEN_HEIGHT) / 3);
-    this.dialog.once("pointerdown", () => {
+    this.dialog.on("pointerdown", () => {
       console.log("Click on dialog");
       this.dispatch(actions.playerIdle());
     });
