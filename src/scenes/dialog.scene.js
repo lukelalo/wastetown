@@ -19,9 +19,15 @@ export default class Dialog extends Phaser.Scene {
     this.store = this.game.store;
 
     // Dialog
-    this.dialog = this.add.text(
+    this.background = this.add.graphics();
+    this.background.fillStyle(0x000000, 0.5);
+    this.background.fillRect(0, (2 * SCREEN_HEIGHT) / 3, SCREEN_WIDTH, SCREEN_HEIGHT);
+    this.background.setVisible(false);
+    this.background.setInteractive();
+
+    this.text1 = this.add.text(
       SCREEN_WIDTH / 2,
-      SCREEN_HEIGHT / 2,
+      SCREEN_HEIGHT * 2 / 3,
       "",
       {
         fontFamily: "Orbitron",
@@ -29,30 +35,31 @@ export default class Dialog extends Phaser.Scene {
         color: "#e3f2ed",
       }
     );
-    this.dialog.setOrigin(0, 0);
-    this.dialog.setStroke("#203c5b", 6);
-    this.dialog.setShadow(2, 2, "#2d2d2d", 4, true, false);
-    this.dialog.setBackgroundColor("#2d2d2d");
-    this.dialog.setInteractive();
-    this.dialog.setDepth(50);
+    this.text1.setOrigin(0.5, 0.5);
+    this.text1.setStroke("#203c5b", 6);
+    this.text1.setShadow(2, 2, "#2d2d2d", 4, true, false);
+    this.text1.setDepth(50);
+    this.text1.setInteractive();
     //this.dialog.setDisplaySize(SCREEN_WIDTH, (2 * SCREEN_HEIGHT) / 3);
-    this.dialog.on("pointerdown", (pointer, localX, localY, event) => {
+    this.text1.setVisible(false);
+    this.text1.on("pointerdown", (pointer, localX, localY, event) => {
       console.log("Click on dialog");
       this.store.dispatch(actions.playerIdle());
       event.stopPropagation();
     });
-    this.dialog.setVisible(false);
   }
 
   update() {
     if (this.videogame.actions.length > 0) {
       const action = this.videogame.actions[0];
-      this.dialog.setX(0);
-      this.dialog.setY((2 * SCREEN_HEIGHT) / 3);
-      this.dialog.setText(action.id);
-      this.dialog.setVisible(true);
+      this.text1.setX(SCREEN_WIDTH / 2);
+      this.text1.setY((3 * SCREEN_HEIGHT) / 4);
+      this.text1.setText(action.id);
+      this.text1.setVisible(true);
+      this.background.setVisible(true);
     } else {
-      this.dialog.setVisible(false);
+      this.text1.setVisible(false);
+      this.background.setVisible(false);
     }
   }
 }
