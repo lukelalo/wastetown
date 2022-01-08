@@ -1,5 +1,6 @@
 import {
   PLAYER_ACTION,
+  PLAYER_IDLE,
   PLAYER_INIT,
   PLAYER_PATH,
   PLAYER_POSITION,
@@ -24,14 +25,20 @@ export default (state = {}, { type, payload }) => {
       return {
         ...state,
         ...payload,
-        isActing: true,
+        status: Status.ACTING,
+      };
+
+    case PLAYER_IDLE:
+      return {
+        ...state,
+        ...payload,
+        status: Status.IDLE,
       };
 
     case PLAYER_INIT:
       return {
         ...state,
         ...payload,
-        isActing: false,
         isAlive: true,
         direction: Directions.DOWN,
         path: [payload.position],
@@ -39,16 +46,18 @@ export default (state = {}, { type, payload }) => {
       };
 
     case PLAYER_PATH:
-      return {
-        ...state,
-        ...payload,
-        direction: _getDirection(
-          payload.path[0],
-          state.position,
-          state.direction
-        ),
-        status: Status.WALKING,
-      };
+      return state.status !== Status.IDLE && state.status !== Status.WALKING
+        ? state
+        : {
+            ...state,
+            ...payload,
+            direction: _getDirection(
+              payload.path[0],
+              state.position,
+              state.direction
+            ),
+            status: Status.WALKING,
+          };
 
     case PLAYER_POSITION:
       return {

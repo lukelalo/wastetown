@@ -1,6 +1,11 @@
 import Phaser from "phaser";
 
-import { COLLISION } from "../constants/game.constants";
+import {
+  COLLISION,
+  Directions,
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
+} from "../constants/game.constants";
 import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
 import * as actions from "../redux/actions";
@@ -12,11 +17,19 @@ export default class Game extends Phaser.Scene {
     super("Game");
   }
 
+  get videogame() {
+    return this.store.getState()["videogame"];
+  }
+
+  get town() {
+    return this.store.getState()["town"];
+  }
+
   create() {
     this.store = this.game.store;
-    this.unsubscribe = this.store.subscribe(() =>
-      this.updateState(this.store.getState())
-    );
+    // this.unsubscribe = this.store.subscribe(() =>
+    //   this.updateState(this.store.getState())
+    // );
     let stage = this;
     this.map = this.make.tilemap({ key: "city" });
     this.scale = this.getProperty(this.map, "scale");
@@ -109,7 +122,6 @@ export default class Game extends Phaser.Scene {
     this.dispatch(actions.playerInit({ position: initialPosition }));
     this.player = new Player(this);
     this.player.setScale(this.scale);
-    this.player.updateState(this.store.getState().player);
     this.player.moveToExactPosition();
 
     // Camera
@@ -121,6 +133,30 @@ export default class Game extends Phaser.Scene {
       this.map.height * TILE_HEIGHT * this.scale
     );
     this.camera.startFollow(this.player);
+
+    // Dialog
+    this.dialog = this.add.text(
+      this.camera.x + SCREEN_WIDTH / 2,
+      this.camera.y + SCREEN_HEIGHT / 2,
+      "",
+      {
+        fontFamily: "Orbitron",
+        fontSize: 30,
+        color: "#e3f2ed",
+      }
+    );
+    this.dialog.setOrigin(0, 0);
+    this.dialog.setStroke("#203c5b", 6);
+    this.dialog.setShadow(2, 2, "#2d2d2d", 4, true, false);
+    this.dialog.setBackgroundColor("#2d2d2d");
+    this.dialog.setInteractive();
+    this.dialog.setDepth(50);
+    this.dialog.setDisplaySize(SCREEN_WIDTH, (2 * SCREEN_HEIGHT) / 3);
+    this.dialog.once("pointerdown", () => {
+      console.log("Click on dialog");
+      this.dispatch(actions.playerIdle());
+    });
+    this.dialog.setVisible(false);
 
     this.start();
   }
@@ -145,6 +181,16 @@ export default class Game extends Phaser.Scene {
     this.marker.x = this.map.tileToWorldX(pointerTileX);
     this.marker.y = this.map.tileToWorldY(pointerTileY);
     this.marker.setVisible(!this.checkCollision(pointerTileX, pointerTileY));
+
+    if (this.videogame.actions.length > 0) {
+      const action = this.videogame.actions[0];
+      this.dialog.setX(this.camera.scrollX);
+      this.dialog.setY(this.camera.scrollY + (2 * SCREEN_HEIGHT) / 3);
+      this.dialog.setText(action.id);
+      this.dialog.setVisible(true);
+    } else {
+      this.dialog.setVisible(false);
+    }
   }
 
   start() {
@@ -180,6 +226,8 @@ export default class Game extends Phaser.Scene {
           this.dispatch(
             actions.playerInteract({
               path: [...(step ? [step] : []), ...path.slice(1)],
+              direction: Directions.UP,
+              id: 1,
             })
           );
         });
@@ -217,9 +265,5 @@ export default class Game extends Phaser.Scene {
     return collisionTiles.includes(
       String(this.map.getTileAt(x, y, true, COLLISION)?.index - 1)
     );
-  }
-
-  updateState({ player }) {
-    this.player?.updateState(player);
   }
 }

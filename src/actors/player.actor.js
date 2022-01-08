@@ -21,11 +21,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   get isActing() {
-    return this.state.isActing;
+    return this.status === Status.ACTING;
   }
 
   get isAlive() {
     return this.state.isAlive;
+  }
+
+  get isWalking() {
+    return this.status === Status.WALKING;
   }
 
   get path() {
@@ -34,6 +38,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   get position() {
     return this.state.position;
+  }
+
+  get state() {
+    return this.scene.store.getState()["player"];
   }
 
   get status() {
@@ -72,10 +80,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  updateState(state) {
-    this.state = state;
-  }
-
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
 
@@ -83,7 +87,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (this.status === Status.WALKING) {
+    if (this.isWalking) {
       // Update player position
       this.updatePosition();
 

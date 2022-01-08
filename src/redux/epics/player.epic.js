@@ -50,7 +50,8 @@ export const interactEpic = (action$, state$) =>
               action.payload.x === payload.path.slice(-1)[0].x &&
               action.payload.y === payload.path.slice(-1)[0].y
           ),
-          mapTo(actions.playerAction({ direction: Directions.UP }))
+          mapTo(actions.playerAction(payload)),
+          take(1)
         ),
         action$.pipe(ofType(actions.PLAYER_PATH), take(2), ignoreElements())
       ).pipe(startWith(actions.playerPath(payload)));
