@@ -134,30 +134,6 @@ export default class Game extends Phaser.Scene {
     );
     this.camera.startFollow(this.player);
 
-    // Dialog
-    this.dialog = this.add.text(
-      this.camera.x + SCREEN_WIDTH / 2,
-      this.camera.y + SCREEN_HEIGHT / 2,
-      "",
-      {
-        fontFamily: "Orbitron",
-        fontSize: 30,
-        color: "#e3f2ed",
-      }
-    );
-    this.dialog.setOrigin(0, 0);
-    this.dialog.setStroke("#203c5b", 6);
-    this.dialog.setShadow(2, 2, "#2d2d2d", 4, true, false);
-    this.dialog.setBackgroundColor("#2d2d2d");
-    this.dialog.setInteractive();
-    this.dialog.setDepth(50);
-    this.dialog.setDisplaySize(SCREEN_WIDTH, (2 * SCREEN_HEIGHT) / 3);
-    this.dialog.on("pointerdown", () => {
-      console.log("Click on dialog");
-      this.dispatch(actions.playerIdle());
-    });
-    this.dialog.setVisible(false);
-
     this.start();
   }
 
@@ -181,16 +157,6 @@ export default class Game extends Phaser.Scene {
     this.marker.x = this.map.tileToWorldX(pointerTileX);
     this.marker.y = this.map.tileToWorldY(pointerTileY);
     this.marker.setVisible(!this.checkCollision(pointerTileX, pointerTileY));
-
-    if (this.videogame.actions.length > 0) {
-      const action = this.videogame.actions[0];
-      this.dialog.setX(this.camera.scrollX);
-      this.dialog.setY(this.camera.scrollY + (2 * SCREEN_HEIGHT) / 3);
-      this.dialog.setText(action.id);
-      this.dialog.setVisible(true);
-    } else {
-      this.dialog.setVisible(false);
-    }
   }
 
   start() {

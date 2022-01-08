@@ -34,9 +34,10 @@ export default class Menu extends Phaser.Scene {
     newGame.setStroke("#203c5b", 6);
     newGame.setShadow(2, 2, "#2d2d2d", 4, true, false);
     newGame.setInteractive();
-    newGame.once("pointerdown", () => {
+    newGame.once("pointerdown", (pointer, localX, localY, event) => {
       console.log("Game starts");
       this.scene.start("Game");
+      event.stopPropagation();
     });
   }
 }
