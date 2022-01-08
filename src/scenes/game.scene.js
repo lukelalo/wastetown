@@ -157,29 +157,8 @@ export default class Game extends Phaser.Scene {
     const y = this.map.worldToTileY(this.camera.scrollY + pointer.y);
 
     if (!this.checkCollision(x, y)) {
-      this.movePlayer({ x, y });
-    } else {
-      // Tile with collision, could be interactive
-      if (x === 12 && y === 18) {
-        console.log("TRASH");
-        // We should move the player to {12, 20} and then execute action
-        this.movePlayer({ x: 12, y: 19 });
-        // Do some stuff after moving.
-      }
-    }
-  }
-
-  movePlayer({ x, y }) {
-    const { step, position } = this.player;
-    const fromX = step ? step.x : position.x;
-    const fromY = step ? step.y : position.y;
-    if (position.x !== x || position.y !== y) {
-      this.destination.x = this.map.tileToWorldX(x);
-      this.destination.y = this.map.tileToWorldY(y);
-      this.destination.setVisible(true);
-
-      console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
-      this.finder.findPath(fromX, fromY, x, y, (path) => {
+      this.calculatePath({ x, y }, (path) => {
+        const { step } = this.player;
         if (path === null) {
           console.warn("Path was not found.");
         } else {
@@ -191,6 +170,35 @@ export default class Game extends Phaser.Scene {
           console.log(path);
         }
       });
+    } else {
+      // Tile with collision, could be interactive
+      if (x === 12 && y === 18) {
+        console.log("TRASH");
+        // We should move the player to {12, 20} and then execute action
+        this.calculatePath({ x: 12, y: 19 }, (path) => {
+          const { step } = this.player;
+          this.dispatch(
+            actions.playerInteract({
+              path: [...(step ? [step] : []), ...path.slice(1)],
+            })
+          );
+        });
+        // Do some stuff after moving.
+      }
+    }
+  }
+
+  calculatePath({ x, y }, callback) {
+    const { step, position } = this.player;
+    const fromX = step ? step.x : position.x;
+    const fromY = step ? step.y : position.y;
+    if (position.x !== x || position.y !== y) {
+      this.destination.x = this.map.tileToWorldX(x);
+      this.destination.y = this.map.tileToWorldY(y);
+      this.destination.setVisible(true);
+
+      console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
+      this.finder.findPath(fromX, fromY, x, y, callback);
       this.finder.calculate();
     }
   }

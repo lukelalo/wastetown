@@ -1,4 +1,9 @@
-import { PLAYER_INIT, PLAYER_PATH, PLAYER_POSITION } from "../actions";
+import {
+  PLAYER_ACTION,
+  PLAYER_INIT,
+  PLAYER_PATH,
+  PLAYER_POSITION,
+} from "../actions";
 import { Directions, Status } from "../../constants/game.constants";
 
 const _getDirection = (step, position, direction) => {
@@ -15,27 +20,34 @@ const _getDirection = (step, position, direction) => {
 
 export default (state = {}, { type, payload }) => {
   switch (type) {
+    case PLAYER_ACTION:
+      return {
+        ...state,
+        ...payload,
+        isActing: true,
+      };
+
     case PLAYER_INIT:
       return {
         ...state,
+        ...payload,
         isActing: false,
         isAlive: true,
         direction: Directions.DOWN,
         path: [payload.position],
         status: Status.IDLE,
-        ...payload,
       };
 
     case PLAYER_PATH:
       return {
         ...state,
+        ...payload,
         direction: _getDirection(
           payload.path[0],
           state.position,
           state.direction
         ),
         status: Status.WALKING,
-        ...payload,
       };
 
     case PLAYER_POSITION:
