@@ -6,8 +6,8 @@ import player from "./reducers/player.reducer";
 
 export const rootEpic = combineEpics(...trapEpics, ...playerEpics);
 
-function lastAction(state = null, action) {
-  return action;
-}
+// function lastAction(state = null, action) {
+//   return action;
+// }
 
-export const rootReducer = combineReducers({ player, lastAction });
+export const rootReducer = combineReducers({ player /*, lastAction*/ });

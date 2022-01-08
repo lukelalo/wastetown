@@ -1,36 +1,55 @@
-import {
-  PLAYER_INIT,
-  PLAYER_MOVE,
-  PLAYER_POSITION,
-  PLAYER_STOP,
-  PLAYER_STEP,
-} from "../actions";
+import { PLAYER_INIT, PLAYER_PATH, PLAYER_POSITION } from "../actions";
+import { Directions, Status } from "../../constants/game.constants";
+
+const _getDirection = (step, position, direction) => {
+  return !step
+    ? direction
+    : step.x > position.x
+    ? Directions.RIGHT
+    : step.x < position.x
+    ? Directions.LEFT
+    : step.y > position.y
+    ? Directions.DOWN
+    : Directions.UP;
+};
 
 export default (state = {}, { type, payload }) => {
   switch (type) {
     case PLAYER_INIT:
       return {
         ...state,
-        isMoving: false,
         isActing: false,
         isAlive: true,
+        direction: Directions.DOWN,
         path: [payload.position],
+        status: Status.IDLE,
         ...payload,
       };
 
-    case PLAYER_MOVE:
-      return { ...state, isMoving: true, ...payload };
+    case PLAYER_PATH:
+      return {
+        ...state,
+        direction: _getDirection(
+          payload.path[0],
+          state.position,
+          state.direction
+        ),
+        status: Status.WALKING,
+        ...payload,
+      };
 
     case PLAYER_POSITION:
-      return { ...state, position: payload };
-
-    case PLAYER_STOP: {
-      return { ...state, isMoving: false, path: [] };
-    }
-
-    case PLAYER_STEP: {
-      return { ...state, path: state.path.slice(1) };
-    }
+      return {
+        ...state,
+        direction: _getDirection(
+          state.path.slice(1)[0],
+          payload,
+          state.direction
+        ),
+        position: payload,
+        path: state.path.slice(1),
+        status: state.path.length > 1 ? Status.WALKING : Status.IDLE,
+      };
 
     default:
       return state;

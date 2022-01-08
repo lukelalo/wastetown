@@ -20,3 +20,18 @@ export const Status = {
   TALKING: "TALKING",
   WALKING: "WALKING",
 };
+
+export const Animations = {
+  [Status.WALKING]: {
+    [Directions.UP]: "walkUp",
+    [Directions.DOWN]: "walkDown",
+    [Directions.LEFT]: "walkLeft",
+    [Directions.RIGHT]: "walkRight",
+  },
+  [Status.IDLE]: {
+    [Directions.UP]: "idleUp",
+    [Directions.DOWN]: "idleDown",
+    [Directions.LEFT]: "idleLeft",
+    [Directions.RIGHT]: "idleRight",
+  },
+};
