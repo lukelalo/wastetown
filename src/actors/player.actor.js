@@ -1,66 +1,77 @@
-import { Directions } from "../constants/game.constants";
+import { Directions, Status } from "../constants/game.constants";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, position) {
-    super(scene, position.x, position.y, "player", "walkDown000");
+  constructor(scene) {
+    super(scene, "player", "walkDown000");
     this.setOrigin(0, 0);
 
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
-    this.isAlive = true;
-    this.isActing = false;
-    this.isMoving = false;
-    this.currentPath = [];
-    this.nextStep = undefined;
-
-    this.position = position;
 
     this.sound = scene.sound;
-    this.moveToExactPosition();
     this.direction = Directions.DOWN;
 
     this.play("idleDown");
+    this.status = Status.IDLE;
+  }
+
+  get isActing() {
+    return this.state.isActing;
+  }
+
+  get isAlive() {
+    return this.state.isAlive;
+  }
+
+  get isMoving() {
+    return this.state.isMoving;
+  }
+
+  get path() {
+    return this.state.path;
+  }
+
+  get position() {
+    return this.state.position;
+  }
+
+  get step() {
+    return this.state.path[0];
   }
 
   start() {
-    this.isAlive = true;
-    this.isActing = false;
     this.play("idleDown", true);
+    this.status = Status.IDLE;
   }
 
   walkUp() {
     this.play("walkUp", true);
+    this.status = Status.WALKING;
     this.direction = Directions.UP;
-    this.position.y--;
-    this.isMoving = true;
   }
 
   walkDown() {
     this.play("walkDown", true);
+    this.status = Status.WALKING;
     this.direction = Directions.DOWN;
-    this.position.y++;
-    this.isMoving = true;
   }
 
   walkLeft() {
     this.play("walkLeft", true);
+    this.status = Status.WALKING;
     this.direction = Directions.LEFT;
-    this.position.x--;
-    this.isMoving = true;
   }
 
   walkRight() {
     this.play("walkRight", true);
+    this.status = Status.WALKING;
     this.direction = Directions.RIGHT;
-    this.position.x++;
-    this.isMoving = true;
   }
 
   doAction() {}
 
   stop() {
     console.info("STOP");
-    this.isMoving = false;
     this.body.stop();
     switch (this.direction) {
       case Directions.LEFT:
@@ -78,34 +89,31 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         break;
     }
 
+    this.status = Status.IDLE;
+
     // Hide destination marker
     this.scene.destination.setVisible(false);
   }
 
-  move(path) {
-    this.currentPath = path;
-
-    // Remove first always
-    this.currentPath.shift();
+  updatePosition() {
+    switch (this.direction) {
+      case Directions.LEFT:
+        this.x -= this.scene.scale;
+        break;
+      case Directions.RIGHT:
+        this.x += this.scene.scale;
+        break;
+      case Directions.UP:
+        this.y -= this.scene.scale;
+        break;
+      case Directions.DOWN:
+        this.y += this.scene.scale;
+        break;
+    }
   }
 
-  updatePosition() {
-    if (this.isMoving) {
-      switch (this.direction) {
-        case Directions.LEFT:
-          this.x -= this.scene.scale;
-          break;
-        case Directions.RIGHT:
-          this.x += this.scene.scale;
-          break;
-        case Directions.UP:
-          this.y -= this.scene.scale;
-          break;
-        case Directions.DOWN:
-          this.y += this.scene.scale;
-          break;
-      }
-    }
+  updateState(state) {
+    this.state = state;
   }
 
   preUpdate(time, delta) {
@@ -115,21 +123,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (!this.isMoving && this.currentPath.length > 0) {
-      this.nextStep = this.currentPath.shift();
-      console.info(this.nextStep);
-      if (this.nextStep?.x > this.position.x) {
-        this.walkRight();
-      } else if (this.nextStep?.x < this.position.x) {
-        this.walkLeft();
-      } else if (this.nextStep?.y > this.position.y) {
-        this.walkDown();
-      } else if (this.nextStep?.y < this.position.y) {
-        this.walkUp();
-      }
-    }
-
-    if (this.isMoving) {
+    if (this.isMoving && this.step && this.status === Status.WALKING) {
       // Update player position
       this.updatePosition();
 
@@ -139,28 +133,50 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.moveToExactPosition();
 
         // Stopping on each step
-        if (this.currentPath.length === 0) {
+        if (this.path.length === 0) {
           this.stop();
-        } else {
-          this.isMoving = false;
         }
+      }
+    }
+
+    if (this.isMoving) {
+      if (
+        this.step?.x > this.position.x &&
+        (this.direction !== Directions.RIGHT || this.status !== Status.WALKING)
+      ) {
+        this.walkRight();
+      } else if (
+        this.step?.x < this.position.x &&
+        (this.direction !== Directions.LEFT || this.status !== Status.WALKING)
+      ) {
+        this.walkLeft();
+      } else if (
+        this.step?.y > this.position.y &&
+        (this.direction !== Directions.DOWN || this.status !== Status.WALKING)
+      ) {
+        this.walkDown();
+      } else if (
+        this.step?.y < this.position.y &&
+        (this.direction !== Directions.UP || this.status !== Status.WALKING)
+      ) {
+        this.walkUp();
       }
     }
   }
 
   moveToExactPosition() {
-    this.x = this.positionToPixels(this.position.x, this.scene.map.tileWidth);
-    this.y = this.positionToPixels(this.position.y, this.scene.map.tileHeight);
-    this.scene.playerAtPosition({ x: this.position.x, y: this.position.y });
+    this.x = this.positionToPixels(this.step.x, this.scene.map.tileWidth);
+    this.y = this.positionToPixels(this.step.y, this.scene.map.tileHeight);
+    this.scene.playerAtPosition({ x: this.step.x, y: this.step.y });
   }
 
   playerAtPosition(x, y) {
     return (
       Math.abs(
-        this.positionToPixels(this.position.x, this.scene.map.tileWidth) - x
+        this.positionToPixels(this.step.x, this.scene.map.tileWidth) - x
       ) < this.scene.scale &&
       Math.abs(
-        this.positionToPixels(this.position.y, this.scene.map.tileHeight) - y
+        this.positionToPixels(this.step.y, this.scene.map.tileHeight) - y
       ) < this.scene.scale
     );
   }

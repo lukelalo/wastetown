@@ -14,3 +14,9 @@ export const Directions = {
   LEFT: "LEFT",
   RIGHT: "RIGHT",
 };
+
+export const Status = {
+  IDLE: "IDLE",
+  TALKING: "TALKING",
+  WALKING: "WALKING",
+};

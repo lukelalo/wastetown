@@ -9,6 +9,9 @@ import {
 } from "../constants/game.constants";
 import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
+import * as actions from "../redux/actions";
+
+const initialPosition = { x: 12, y: 19 };
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -17,6 +20,9 @@ export default class Game extends Phaser.Scene {
 
   create() {
     this.store = this.game.store;
+    this.unsubscribe = this.store.subscribe(() =>
+      this.updateState(this.store.getState())
+    );
     let stage = this;
     this.map = this.make.tilemap({ key: "city" });
     this.scale = this.getProperty(this.map, "scale");
@@ -106,8 +112,11 @@ export default class Game extends Phaser.Scene {
     this.finder.setGrid(grid);
 
     // Player
-    this.player = new Player(this, { x: 12, y: 19 });
+    this.dispatch(actions.playerInit({ position: initialPosition }));
+    this.player = new Player(this);
     this.player.setScale(this.scale);
+    this.player.updateState(this.store.getState().player);
+    this.player.moveToExactPosition();
 
     // Camera
     this.camera = this.cameras.main;
@@ -120,6 +129,10 @@ export default class Game extends Phaser.Scene {
     this.camera.startFollow(this.player);
 
     this.start();
+  }
+
+  dispatch(action) {
+    this.store.dispatch(action);
   }
 
   getProperty(item, propertyName, defaultValue) {
@@ -163,7 +176,6 @@ export default class Game extends Phaser.Scene {
   }
 
   movePlayer({ x, y }) {
-    this.store.dispatch({ type: "MOVE_PLAYER", payload: { x, y } });
     const player = this.player;
     const fromX = player.position.x;
     const fromY = player.position.y;
@@ -172,19 +184,19 @@ export default class Game extends Phaser.Scene {
     this.destination.setVisible(true);
 
     console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
-    this.finder.findPath(fromX, fromY, x, y, function (path) {
+    this.finder.findPath(fromX, fromY, x, y, (path) => {
       if (path === null) {
         console.warn("Path was not found.");
       } else {
+        this.dispatch(actions.playerMove({ path: path.slice(1) }));
         console.log(path);
-        player.move(path);
       }
     });
     this.finder.calculate();
   }
 
   playerAtPosition({ x, y }) {
-    this.store.dispatch({ type: "PLAYER_POSITION", payload: { x, y } });
+    this.dispatch(actions.playerPosition({ x, y }));
   }
 
   checkCollision(x, y) {
@@ -197,5 +209,9 @@ export default class Game extends Phaser.Scene {
     return collisionTiles.includes(
       String(this.map.getTileAt(x, y, true, COLLISION).index - 1)
     );
+  }
+
+  updateState({ player }) {
+    this.player?.updateState(player);
   }
 }
