@@ -197,7 +197,6 @@ export default class Game extends Phaser.Scene {
             })
           );
         });
-        // Do some stuff after moving.
       }
     }
   }
@@ -206,15 +205,13 @@ export default class Game extends Phaser.Scene {
     const { step, position } = this.player;
     const fromX = step ? step.x : position.x;
     const fromY = step ? step.y : position.y;
-    if (position.x !== x || position.y !== y) {
-      this.destination.x = this.map.tileToWorldX(x);
-      this.destination.y = this.map.tileToWorldY(y);
-      this.destination.setVisible(true);
+    this.destination.x = this.map.tileToWorldX(x);
+    this.destination.y = this.map.tileToWorldY(y);
+    this.destination.setVisible(true);
 
-      console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
-      this.finder.findPath(fromX, fromY, x, y, callback);
-      this.finder.calculate();
-    }
+    console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
+    this.finder.findPath(fromX, fromY, x, y, callback);
+    this.finder.calculate();
   }
 
   playerAtPosition({ x, y }) {

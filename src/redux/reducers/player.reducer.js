@@ -24,7 +24,7 @@ export default (state = {}, { type, payload }) => {
     case PLAYER_ACTION:
       return {
         ...state,
-        ...payload,
+        direction: payload.direction || state.direction,
         status: Status.ACTING,
       };
 
@@ -50,13 +50,13 @@ export default (state = {}, { type, payload }) => {
         ? state
         : {
             ...state,
-            ...payload,
             direction: _getDirection(
               payload.path[0],
               state.position,
               state.direction
             ),
-            status: Status.WALKING,
+            path: payload.path,
+            status: payload.path.length > 0 ? Status.WALKING : Status.IDLE,
           };
 
     case PLAYER_POSITION:

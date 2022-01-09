@@ -8,7 +8,7 @@ import {
   ignoreElements,
   startWith,
 } from "rxjs/operators";
-import { race, of } from "rxjs";
+import { race, of, iif } from "rxjs";
 import * as actions from "../actions";
 import { Directions } from "../../constants/game.constants";
 
@@ -29,19 +29,24 @@ export const interactEpic = (action$, state$) =>
     ofType(actions.PLAYER_INTERACT),
     withLatestFrom(state$),
     switchMap(([{ payload }, { player }]) => {
-      return race(
-        action$.pipe(
-          ofType(actions.PLAYER_POSITION),
-          filter(
-            (action) =>
-              action.payload.x === payload.path.slice(-1)[0].x &&
-              action.payload.y === payload.path.slice(-1)[0].y
+      return iif(
+        () => payload.path.length === 0,
+        of(actions.playerAction(payload)),
+        race(
+          action$.pipe(
+            ofType(actions.PLAYER_POSITION),
+            filter(
+              (action) =>
+                payload.path.length === 0 ||
+                (action.payload.x === payload.path.slice(-1)[0].x &&
+                  action.payload.y === payload.path.slice(-1)[0].y)
+            ),
+            mapTo(actions.playerAction(payload)),
+            take(1)
           ),
-          mapTo(actions.playerAction(payload)),
-          take(1)
-        ),
-        action$.pipe(ofType(actions.PLAYER_PATH), take(2), ignoreElements())
-      ).pipe(startWith(actions.playerPath(payload)));
+          action$.pipe(ofType(actions.PLAYER_PATH), take(2), ignoreElements())
+        ).pipe(startWith(actions.playerPath(payload)))
+      );
     })
   );
 
