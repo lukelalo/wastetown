@@ -24,19 +24,6 @@ import { Directions } from "../../constants/game.constants";
 //     mapTo(actions.playerStop())
 //   );
 
-// export const stepEpic = (action$, state$) =>
-//   action$.pipe(
-//     ofType(actions.PLAYER_POSITION),
-//     withLatestFrom(state$),
-//     filter(
-//       ([action, { player }]) =>
-//         player.path.length > 1 &&
-//         action.payload.x === player.path[0].x &&
-//         action.payload.y === player.path[0].y
-//     ),
-//     mapTo(actions.playerStep())
-//   );
-
 export const interactEpic = (action$, state$) =>
   action$.pipe(
     ofType(actions.PLAYER_INTERACT),

@@ -31,8 +31,8 @@ export default (state = {}, { type, payload }) => {
     case PLAYER_IDLE:
       return {
         ...state,
-        ...payload,
         status: Status.IDLE,
+        path: [],
       };
 
     case PLAYER_INIT:

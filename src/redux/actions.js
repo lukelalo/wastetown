@@ -6,7 +6,7 @@ export const PLAYER_ACTION = "PLAYER ACTION";
 export const playerAction = (payload) => ({ type: PLAYER_ACTION, payload });
 
 export const PLAYER_IDLE = "PLAYER IDLE";
-export const playerIdle = (payload) => ({ type: PLAYER_IDLE, payload });
+export const playerIdle = () => ({ type: PLAYER_IDLE });
 
 export const PLAYER_INIT = "PLAYER INIT";
 export const playerInit = (payload) => ({ type: PLAYER_INIT, payload });

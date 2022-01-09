@@ -27,7 +27,7 @@ export default class Dialog extends Phaser.Scene {
     this.background.setVisible(false);
     this.background.setInteractive();
 
-    this.text1 = this.add.text(SCREEN_WIDTH / 6, (SCREEN_HEIGHT * 3) / 4, "", {
+    this.text1 = this.add.text(SCREEN_WIDTH / 2, (SCREEN_HEIGHT * 3) / 4, "", {
       fontFamily: "Orbitron",
       fontSize: 30,
       color: "#e3f2ed",
