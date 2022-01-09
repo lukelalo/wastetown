@@ -5,6 +5,7 @@
 - [x] Sacar los quests como lista y establecer sus propiedades
 - [x] Los dialogos ahora pueden mostrar todos los textos de un quest
 - [x] Los quests no se activan si el personaje no se mueve
+- [x] Multiples clicks en el mismo evento acumula diálogos
 
 ## Feature
 
@@ -16,4 +17,3 @@
 ## Bugs
 
 - [ ] Evitar que los clicks en la capa de dialogo muevan al personaje
-- [ ] Multiples clicks en el mismo evento acumula diálogos
