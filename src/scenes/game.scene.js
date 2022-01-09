@@ -155,15 +155,18 @@ export default class Game extends Phaser.Scene {
     var pointerTileY = this.map.worldToTileY(worldPoint.y);
     this.marker.x = this.map.tileToWorldX(pointerTileX);
     this.marker.y = this.map.tileToWorldY(pointerTileY);
-    this.marker.setVisible(!this.checkCollision(pointerTileX, pointerTileY));
+    this.marker.setVisible(!this.player.isActing && !this.checkCollision(pointerTileX, pointerTileY));
   }
 
   start() {
     this.player.start();
-    this.input.on("pointerup", this.handleClick, this);
+    this.input.on("pointerdown", this.handleClick, this);
   }
 
   handleClick(pointer) {
+    // Avoid pointers on actions
+    if (this.player.isActing) return;
+
     const x = this.map.worldToTileX(this.camera.scrollX + pointer.x);
     const y = this.map.worldToTileY(this.camera.scrollY + pointer.y);
 

@@ -1,5 +1,6 @@
 export const SCREEN_WIDTH = 800;
 export const SCREEN_HEIGHT = 600;
+export const LETTER_TIME = 50;
 export const SCALE = 2;
 export const STEP = 1;
 export const COLLISION = "Collision";
