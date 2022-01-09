@@ -82,6 +82,21 @@
          "name":"scale",
          "type":"int",
          "value":2
+        }, 
+        {
+         "name":"tileset",
+         "type":"string",
+         "value":"urban"
+        }, 
+        {
+         "name":"xPosition",
+         "type":"int",
+         "value":12
+        }, 
+        {
+         "name":"yPosition",
+         "type":"int",
+         "value":19
         }],
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

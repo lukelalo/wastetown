@@ -9,7 +9,12 @@ const initialPosition = { x: 12, y: 19 };
 
 export default class Game extends Phaser.Scene {
   constructor() {
-    super("Game");
+    super({key: "Game"});
+  }
+
+  init(props) {
+    const { map = "city" } = props;
+    this.currentMap = map;
   }
 
   get videogame() {
@@ -30,16 +35,18 @@ export default class Game extends Phaser.Scene {
     //   this.updateState(this.store.getState())
     // );
     let stage = this;
-    this.map = this.make.tilemap({ key: "city" });
+    this.map = this.make.tilemap({ key: this.currentMap });
     this.scale = this.getProperty(this.map, "scale");
-    this.tileset = this.map.addTilesetImage("urban", "urban", 16, 16, 0, 1);
+    let tilesetName = this.getProperty(this.map, "tileset");
+    let tileset = this.map.tilesets.find(item => item.name === tilesetName);
+    let tilesetImage = this.map.addTilesetImage(tilesetName, tilesetName, tileset.tileWidth, tileset.tileHeight, tileset.tileMargin, tileset.tileSpacing);
     const TILE_WIDTH = this.map.tileWidth;
     const TILE_HEIGHT = this.map.tileHeight;
 
     // Layers
     this.layers = this.map.layers.map((data) => {
       const id = data.name;
-      const layer = stage.map.createLayer(id, stage.tileset);
+      const layer = stage.map.createLayer(id, tilesetImage);
       layer
         .setScale(this.scale)
         .setCollisionByProperty({ collide: true })
