@@ -1,11 +1,6 @@
 import Phaser from "phaser";
 
-import {
-  COLLISION,
-  Directions,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-} from "../constants/game.constants";
+import { COLLISION, Directions } from "../constants/game.constants";
 import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
 import * as actions from "../redux/actions";
@@ -19,6 +14,10 @@ export default class Game extends Phaser.Scene {
 
   get videogame() {
     return this.store.getState()["videogame"];
+  }
+
+  get quests() {
+    return this.store.getState()["quests"];
   }
 
   get town() {
@@ -184,16 +183,17 @@ export default class Game extends Phaser.Scene {
       });
     } else {
       // Tile with collision, could be interactive
-      if (x === 12 && y === 18) {
-        console.log("TRASH");
+      const questAtPosition = this.quests.find(
+        (quest) => quest.at.x === x && quest.at.y === y && !quest.done
+      );
+      if (questAtPosition) {
         // We should move the player to {12, 20} and then execute action
-        this.calculatePath({ x: 12, y: 19 }, (path) => {
+        this.calculatePath(questAtPosition.from, (path) => {
           const { step } = this.player;
           this.dispatch(
             actions.playerInteract({
+              ...questAtPosition,
               path: [...(step ? [step] : []), ...path.slice(1)],
-              direction: Directions.UP,
-              id: 1,
             })
           );
         });

@@ -21,9 +21,14 @@ export const PLAYER_POSITION = "PLAYER POSITION";
 export const playerPosition = (payload) => ({ type: PLAYER_POSITION, payload });
 
 // Town actions
-export const TOWN_INIT = "TOWN INIT";
-export const townInit = (payload) => ({ type: TOWN_INIT, payload });
 
 // Videogame actions
-export const VIDEOGAME_INIT = "VIDEOGAME INIT";
-export const videogameInit = (payload) => ({ type: VIDEOGAME_INIT, payload });
+export const VIDEOGAME_NEXT_ACTION = "VIDEOGAME NEXT ACTION";
+export const videogameNextAction = (payload) => ({
+  type: VIDEOGAME_NEXT_ACTION,
+  payload,
+});
+
+// Quest actions
+export const QUEST_DONE = "QUEST DONE";
+export const questDone = (payload) => ({ type: QUEST_DONE, payload });

@@ -1,11 +1,11 @@
-import { VIDEOGAME_INIT, PLAYER_ACTION, PLAYER_IDLE } from "../actions";
+import { PLAYER_ACTION, PLAYER_IDLE, VIDEOGAME_NEXT_ACTION } from "../actions";
 
 export default (state = { actions: [] }, { type, payload }) => {
   switch (type) {
     case PLAYER_ACTION:
       return {
         ...state,
-        actions: [...state.actions, payload],
+        actions: [...state.actions, ...payload.script],
       };
     case PLAYER_IDLE:
       return {
@@ -13,10 +13,10 @@ export default (state = { actions: [] }, { type, payload }) => {
         actions: [],
       };
 
-    case VIDEOGAME_INIT:
+    case VIDEOGAME_NEXT_ACTION:
       return {
         ...state,
-        ...payload,
+        actions: state.actions.slice(1),
       };
 
     default:
