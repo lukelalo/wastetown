@@ -40,8 +40,12 @@ export default class Preloader extends Phaser.Scene {
     this.load.tilemapTiledJSON("townHall", townHallMap);
 
     // load the event files
-    this.load.json("cityEvents", cityEvents);
-    this.load.json("townHallEvents", townHallEvents);
+    console.info("PRE CITY EVENTS")
+    this.cache.addCustom("cityEvents", cityEvents);
+    console.info("PRE TOWN HALL EVENTS")
+    this.cache.addCustom("townHallEvents", townHallEvents);
+    console.info("POST EVENTS")
+    console.info(townHallEvents);
   }
 
   create() {

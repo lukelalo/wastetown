@@ -1,21 +1,25 @@
-{
-  "Exit Town Hall Left" : {
+[
+  {
+    "description": "Exit Town Hall Left",
     "at": {"x": 19, "y": 19},
     "action": [{
       "type": "CHANGE_SCENE",
-      "scene": "city",
-      "direction": "DOWN",
-      "position": {"x": 16, "y": 17}
+      "properties" : {
+        "scene": "city",
+        "direction": "DOWN",
+        "position": {"x": 16, "y": 17}
+      }
     }]
-  },
-
-  "Exit Town Hall Right" : {
+  }, {
+    "description": "Exit Town Hall Right",
     "at": {"x": 20, "y": 19},
     "action": [{
       "type": "CHANGE_SCENE",
-      "scene": "city",
-      "direction": "DOWN",
-      "position": {"x": 17, "y": 17}
+      "properties" : {
+        "scene": "city",
+        "direction": "DOWN",
+        "position": {"x": 17, "y": 17}
+      }
     }]
   }
-}
+]

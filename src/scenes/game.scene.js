@@ -15,6 +15,7 @@ export default class Game extends Phaser.Scene {
     this.currentMap = map;
     this.initialPosition = position;
     this.initialDirection = direction;
+    console.info("INIT GAME SCENE");
   }
 
   get videogame() {
@@ -36,6 +37,9 @@ export default class Game extends Phaser.Scene {
     // );
     let stage = this;
     this.map = this.make.tilemap({ key: this.currentMap });
+    console.info("PRE MAP EVENTS");
+    this.mapEvents = this.cache.custom[`${this.map}Events`];
+    console.info("POST MAP EVENTS", this.mapEvents);
     this.scale = this.getProperty(this.map, "scale");
     let tilesetName = this.getProperty(this.map, "tileset");
     let tileset = this.map.tilesets.find(item => item.name === tilesetName);
@@ -193,22 +197,16 @@ export default class Game extends Phaser.Scene {
       });
     } else {
       // Tile with collision, could be interactive
-      const questAtPosition = this.quests.find(
-        (quest) => quest.at.x === x && quest.at.y === y && !quest.done
-      );
-      if (questAtPosition) {
-        // We should move the player to {12, 20} and then execute action
-        this.calculatePath(questAtPosition.from, (path) => {
-          const { step } = this.player;
-          this.dispatch(
-            actions.playerInteract({
-              ...questAtPosition,
-              path: [...(step ? [step] : []), ...path.slice(1)],
-            })
-          );
-        });
+      const eventAtPosition = this.mapEvents.find(e => e.clickAt?.x === x && e.clickAt?.y === y);
+      if (eventAtPosition) {
+        // Execute actions from event
+        this.executeEventActions(eventAtPosition.actions);
       }
     }
+  }
+
+  executeEventActions(actions) {
+    // Chain actions to be executed one after another
   }
 
   calculatePath({ x, y }, callback) {
