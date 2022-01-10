@@ -5,16 +5,16 @@ import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
 import * as actions from "../redux/actions";
 
-const initialPosition = { x: 12, y: 19 };
-
 export default class Game extends Phaser.Scene {
   constructor() {
     super({key: "Game"});
   }
 
   init(props) {
-    const { map = "city" } = props;
+    const { map = "city", position = {x: 12, y: 19}, direction = Directions.DOWN } = props;
     this.currentMap = map;
+    this.initialPosition = position;
+    this.initialDirection = direction;
   }
 
   get videogame() {
@@ -125,7 +125,7 @@ export default class Game extends Phaser.Scene {
     this.finder.setGrid(grid);
 
     // Player
-    this.dispatch(actions.playerInit({ position: initialPosition }));
+    this.dispatch(actions.playerInit({ position: this.initialPosition, direction: this.initialDirection }));
     this.player = new Player(this);
     this.player.setScale(this.scale);
     this.player.moveToExactPosition();

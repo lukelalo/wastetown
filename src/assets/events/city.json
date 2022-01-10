@@ -1,0 +1,49 @@
+{
+  "Enter Town Hall Left" : {
+    "at": {"x": 16, "y": 16},
+    "action": [{
+      "type": "CHANGE_SCENE",
+      "scene": "townHall",
+      "direction": "UP",
+      "position": {"x": 19, "y": 18}
+    }]
+  },
+
+  "Enter Town Hall Right" : {
+    "at": {"x": 17, "y": 16},
+    "action": [{
+      "type": "CHANGE_SCENE",
+      "scene": "townHall",
+      "direction": "UP",
+      "position": {"x": 20, "y": 18}
+    }]
+  },
+
+  "Wastebin" : {
+    "click": {"x": 12, "y": 18},
+    "action": [{
+      "type": "MOVE_PLAYER",
+      "direction": "UP",
+      "position": {"x": 12, "y": 19}
+    },{
+      "type": "SHOW_TEXT",
+      "text": [
+        "Hola, soy una papelera",
+        "Estoy llena de basura"]
+    }]
+  },
+
+  "Smokey car" : {
+    "click": {"x": 7, "y": 16},
+    "action": [{
+      "type": "MOVE_PLAYER",
+      "direction": "RIGHT",
+      "position": {"x": 6, "y": 16}
+    },{
+      "type": "SHOW_TEXT",
+      "text": [
+        "Ves un coche viejo y destartalado aparcado",
+        "No sabes cómo, pero continúa echando humo por el tubo de escape"]
+    }]
+  }
+}

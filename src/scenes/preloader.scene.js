@@ -2,7 +2,11 @@ import Phaser from "phaser";
 import logoImg from "../assets/images/phaserLogo.png";
 import basicImg from "../assets/tilesets/basic.png";
 import urbanTileset from "../assets/tilesets/urban.png";
+import indoorTileset from "../assets/tilesets/indoor.png";
 import cityMap from "../assets/maps/city.json";
+import townHallMap from "../assets/maps/townHall.json";
+import cityEvents from "../assets/events/city.json";
+import townHallEvents from "../assets/events/townHall.json";
 import playerPng from "../assets/sprites/player.png";
 import playerJson from "../assets/sprites/player.json";
 import { SCREEN_WIDTH, SCREEN_HEIGHT } from "../constants/game.constants";
@@ -27,11 +31,17 @@ export default class Preloader extends Phaser.Scene {
     this.load.image("basic", basicImg);
     this.load.atlas("player", playerPng, playerJson);
 
-    // load the PNG file
+    // load the tileset files
     this.load.image("urban", urbanTileset);
+    this.load.image("indoor", indoorTileset);
 
-    // load the JSON file
+    // load the map files
     this.load.tilemapTiledJSON("city", cityMap);
+    this.load.tilemapTiledJSON("townHall", townHallMap);
+
+    // load the event files
+    this.load.json("cityEvents", cityEvents);
+    this.load.json("townHallEvents", townHallEvents);
   }
 
   create() {

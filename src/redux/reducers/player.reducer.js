@@ -40,7 +40,7 @@ export default (state = {}, { type, payload }) => {
         ...state,
         ...payload,
         isAlive: true,
-        direction: Directions.DOWN,
+        direction: [payload.direction],
         path: [payload.position],
         status: Status.IDLE,
       };

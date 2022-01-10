@@ -87,16 +87,6 @@
          "name":"tileset",
          "type":"string",
          "value":"urban"
-        }, 
-        {
-         "name":"xPosition",
-         "type":"int",
-         "value":12
-        }, 
-        {
-         "name":"yPosition",
-         "type":"int",
-         "value":19
         }],
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -132,45 +122,6 @@
                          "value":5
                         }]
                 }],
-         "tilewidth":16
-        }, 
-        {
-         "columns":23,
-         "firstgid":487,
-         "image":"..\/tilesets\/town.png",
-         "imageheight":512,
-         "imagewidth":368,
-         "margin":0,
-         "name":"town",
-         "spacing":0,
-         "tilecount":736,
-         "tileheight":16,
-         "tilewidth":16
-        }, 
-        {
-         "columns":12,
-         "firstgid":1223,
-         "image":"..\/tilesets\/basic.png",
-         "imageheight":704,
-         "imagewidth":192,
-         "margin":0,
-         "name":"basic",
-         "spacing":0,
-         "tilecount":528,
-         "tileheight":16,
-         "tilewidth":16
-        }, 
-        {
-         "columns":36,
-         "firstgid":1751,
-         "image":"..\/tilesets\/water.png",
-         "imageheight":976,
-         "imagewidth":576,
-         "margin":0,
-         "name":"water",
-         "spacing":0,
-         "tilecount":2196,
-         "tileheight":16,
          "tilewidth":16
         }],
  "tilewidth":16,
