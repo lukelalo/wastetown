@@ -53,7 +53,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   get step() {
-    return this.path[0];
+    return this.state.path[0];
+  }
+
+  get nextStep() {
+    return this.state.nextStep;
   }
 
   setFinder(finder) {
@@ -98,7 +102,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.destination.position) {
       if (this.path.length === 0) {
         this.scene.calculatePath(this.destination.position, (path) => {
-          const step = this.step;
+          const step = this.nextStep;
+          console.info("Last step was", step);
           if (path === null) {
             console.warn("Path was not found.");
           } else {

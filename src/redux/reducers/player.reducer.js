@@ -85,6 +85,7 @@ export default (
               state.direction
             ),
             path: payload.path,
+            nextStep: {...payload.path[0]},
             status: payload.path.length > 0 ? Status.WALKING : Status.IDLE,
           };
 
@@ -100,6 +101,7 @@ export default (
           ? state.destination.direction || state.direction
           : _getDirection(state.path[1], payload.position, state.direction),
         path: state.path.slice(1),
+        nextStep: state.path[1] ? {...state.path[1]} : null,
         position: payload.position,
         status: atDestination ? Status.IDLE : Status.WALKING,
       };
