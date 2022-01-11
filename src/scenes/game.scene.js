@@ -38,7 +38,7 @@ export default class Game extends Phaser.Scene {
     let stage = this;
     this.map = this.make.tilemap({ key: this.currentMap });
     console.info("PRE MAP EVENTS");
-    this.mapEvents = this.cache.custom[`${this.map}Events`];
+    this.mapEvents = this.game.cache.json.get(`${this.currentMap}Events`);
     console.info("POST MAP EVENTS", this.mapEvents);
     this.scale = this.getProperty(this.map, "scale");
     let tilesetName = this.getProperty(this.map, "tileset");

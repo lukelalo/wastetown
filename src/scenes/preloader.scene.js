@@ -41,9 +41,9 @@ export default class Preloader extends Phaser.Scene {
 
     // load the event files
     console.info("PRE CITY EVENTS")
-    this.cache.addCustom("cityEvents", cityEvents);
+    this.game.cache.json.add("cityEvents", cityEvents);
     console.info("PRE TOWN HALL EVENTS")
-    this.cache.addCustom("townHallEvents", townHallEvents);
+    this.game.cache.json.add("townHallEvents", townHallEvents);
     console.info("POST EVENTS")
     console.info(townHallEvents);
   }
