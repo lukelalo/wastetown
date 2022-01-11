@@ -6,7 +6,7 @@
       {
         "type": "CHANGE SCENE",
         "payload": {
-          "scene": "city",
+          "name": "city",
           "direction": "DOWN",
           "position": { "x": 16, "y": 17 }
         }
@@ -20,7 +20,7 @@
       {
         "type": "CHANGE SCENE",
         "payload": {
-          "scene": "city",
+          "name": "city",
           "direction": "DOWN",
           "position": { "x": 17, "y": 17 }
         }

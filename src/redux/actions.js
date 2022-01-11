@@ -51,3 +51,6 @@ export const movePlayer = (payload) => ({ type: MOVE_PLAYER, payload });
 
 export const SHOW_TEXT = "SHOW TEXT";
 export const showText = (payload) => ({ type: SHOW_TEXT, payload });
+
+export const CHANGE_SCENE = "CHANGE SCENE";
+export const changeScene = (payload) => ({ type: CHANGE_SCENE, payload });

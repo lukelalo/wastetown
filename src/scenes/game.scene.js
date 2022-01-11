@@ -10,18 +10,6 @@ export default class Game extends Phaser.Scene {
     super({ key: "Game" });
   }
 
-  init(props) {
-    const {
-      map = "city",
-      position = { x: 12, y: 19 },
-      direction = Directions.DOWN,
-    } = props;
-    this.currentMap = map;
-    this.initialPosition = position;
-    this.initialDirection = direction;
-    console.info("INIT GAME SCENE");
-  }
-
   get videogame() {
     return this.store.getState()["videogame"];
   }
@@ -30,19 +18,17 @@ export default class Game extends Phaser.Scene {
     return this.store.getState()["quests"];
   }
 
-  get town() {
-    return this.store.getState()["town"];
+  get currentMap() {
+    return this.store.getState()["map"];
   }
 
   create() {
     this.store = this.game.store;
-    // this.unsubscribe = this.store.subscribe(() =>
-    //   this.updateState(this.store.getState())
-    // );
     let stage = this;
-    this.map = this.make.tilemap({ key: this.currentMap });
+    this.map = this.make.tilemap({ key: this.currentMap.name });
+    this.mapName = this.currentMap.name;
     console.info("PRE MAP EVENTS");
-    this.mapEvents = this.game.cache.json.get(`${this.currentMap}Events`);
+    this.mapEvents = this.game.cache.json.get(`${this.currentMap.name}Events`);
     console.info("POST MAP EVENTS", this.mapEvents);
     this.scale = this.getProperty(this.map, "scale");
     let tilesetName = this.getProperty(this.map, "tileset");
@@ -142,8 +128,8 @@ export default class Game extends Phaser.Scene {
     // Player
     this.dispatch(
       actions.playerInit({
-        position: this.initialPosition,
-        direction: this.initialDirection,
+        position: this.currentMap.position,
+        direction: this.currentMap.direction,
       })
     );
     this.player = new Player(this);
@@ -186,6 +172,11 @@ export default class Game extends Phaser.Scene {
     this.marker.setVisible(
       !this.player.isActing && !this.checkCollision(pointerTileX, pointerTileY)
     );
+
+    // Check map name
+    if (this.mapName !== this.currentMap.name) {
+      this.scene.restart();
+    }
   }
 
   start() {
@@ -239,6 +230,14 @@ export default class Game extends Phaser.Scene {
 
   playerAtPosition(payload) {
     this.dispatch(actions.playerPosition(payload));
+    // Tile with collision, could be interactive
+    const eventAtPosition = this.mapEvents.find(
+      (e) => e.at?.x === payload.position.x && e.at?.y === payload.position.y
+    );
+    if (eventAtPosition) {
+      // Execute actions from event
+      this.executeEventActions(eventAtPosition.actions);
+    }
   }
 
   playerSetPath(payload) {
