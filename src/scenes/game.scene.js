@@ -206,9 +206,9 @@ export default class Game extends Phaser.Scene {
   }
 
   calculatePath({ x, y }, callback) {
-    const { nextStep, position } = this.player;
-    const fromX = nextStep ? nextStep.x : position.x;
-    const fromY = nextStep ? nextStep.y : position.y;
+    const { step, position } = this.player;
+    const fromX = step ? step.x : position.x;
+    const fromY = step ? step.y : position.y;
     this.destination.x = this.map.tileToWorldX(x);
     this.destination.y = this.map.tileToWorldY(y);
     this.destination.setVisible(true);
@@ -222,8 +222,6 @@ export default class Game extends Phaser.Scene {
     this.dispatch(actions.playerPosition(payload));
     // Check event at current position
     this.checkEventAtPosition(payload, "at");
-    console.info("Current position is ", payload.position);
-    console.info("Next step is ", this.player.nextStep);
   }
 
   playerSetPath(payload) {

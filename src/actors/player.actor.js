@@ -102,14 +102,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.destination.position) {
       if (this.path.length === 0) {
         this.scene.calculatePath(this.destination.position, (path) => {
-          const step = this.nextStep;
-          console.info("Last step was", step);
           if (path === null) {
             console.warn("Path was not found.");
           } else {
-            this.scene.playerSetPath({
-              path: [...(step ? [step] : []), ...path.slice(1)],
-            });
+            this.scene.playerSetPath({path: path.slice(1)});
             console.log(path);
           }
         });
