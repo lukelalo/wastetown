@@ -64,4 +64,37 @@ export const movePlayerEpic = (action$, state$) =>
     )
   );
 
-export const epics = [nextActionEpic, setActionsEpic, movePlayerEpic];
+export const showTextEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(actions.SHOW_TEXT),
+    withLatestFrom(state$),
+    // Switch to the last Interact action
+    switchMap(([{ payload }, { videogame }]) =>
+      iif(
+        () => videogame.dialogs.length === 0,
+        of(actions.videogameNextAction()),
+        race(
+          action$.pipe(
+            ofType(actions.VIDEOGAME_NEXT_DIALOG),
+            withLatestFrom(state$),
+            filter(([action, { videogame }]) => videogame.dialogs.length === 0),
+            mapTo(actions.videogameNextAction()),
+            take(1)
+          ),
+          action$.pipe(ofType(actions.SHOW_TEXT), take(1), ignoreElements()),
+          action$.pipe(
+            ofType(actions.VIDEOGAME_SET_ACTIONS),
+            take(1),
+            ignoreElements()
+          )
+        )
+      )
+    )
+  );
+
+export const epics = [
+  nextActionEpic,
+  setActionsEpic,
+  movePlayerEpic,
+  showTextEpic,
+];

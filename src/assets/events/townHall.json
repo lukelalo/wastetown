@@ -4,7 +4,7 @@
     "at": { "x": 19, "y": 19 },
     "actions": [
       {
-        "type": "CHANGE_SCENE",
+        "type": "CHANGE SCENE",
         "payload": {
           "scene": "city",
           "direction": "DOWN",
@@ -18,7 +18,7 @@
     "at": { "x": 20, "y": 19 },
     "actions": [
       {
-        "type": "CHANGE_SCENE",
+        "type": "CHANGE SCENE",
         "payload": {
           "scene": "city",
           "direction": "DOWN",

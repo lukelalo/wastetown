@@ -95,7 +95,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (this.isWalking) {
+    if (this.destination.position) {
       if (this.path.length === 0) {
         this.scene.calculatePath(this.destination.position, (path) => {
           const step = this.step;

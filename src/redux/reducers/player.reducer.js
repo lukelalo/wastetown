@@ -51,8 +51,8 @@ export default (
 
     case MOVE_PLAYER: {
       const atDestination =
-        payload.position.x !== state.position.x ||
-        payload.position.y !== state.position.y;
+        payload.position.x === state.position.x &&
+        payload.position.y === state.position.y;
 
       return {
         ...state,
@@ -63,7 +63,6 @@ export default (
         ),
         destination: atDestination ? {} : payload,
         path: state.path.slice(0, 1),
-        status: atDestination ? Status.WALKING : Status.IDLE,
       };
     }
 
@@ -82,7 +81,6 @@ export default (
           };
 
     case PLAYER_POSITION: {
-      // const atDestination = state.path.length < 2;
       const atDestination =
         !state.destination.position ||
         (state.destination.position.x === payload.position.x &&

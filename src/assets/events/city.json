@@ -4,7 +4,7 @@
     "at": { "x": 16, "y": 16 },
     "actions": [
       {
-        "type": "CHANGE_SCENE",
+        "type": "CHANGE SCENE",
         "payload": {
           "scene": "townHall",
           "direction": "UP",
@@ -18,7 +18,7 @@
     "at": { "x": 17, "y": 16 },
     "actions": [
       {
-        "type": "CHANGE_SCENE",
+        "type": "CHANGE SCENE",
         "payload": {
           "scene": "townHall",
           "direction": "UP",
@@ -32,14 +32,14 @@
     "clickAt": { "x": 12, "y": 18 },
     "actions": [
       {
-        "type": "MOVE_PLAYER",
+        "type": "MOVE PLAYER",
         "payload": {
           "direction": "UP",
           "position": { "x": 12, "y": 19 }
         }
       },
       {
-        "type": "SHOW_TEXT",
+        "type": "SHOW TEXT",
         "payload": {
           "text": ["Hola, soy una papelera", "Estoy llena de basura"]
         }
@@ -51,14 +51,14 @@
     "clickAt": { "x": 7, "y": 16 },
     "actions": [
       {
-        "type": "MOVE_PLAYER",
+        "type": "MOVE PLAYER",
         "payload": {
           "direction": "RIGHT",
           "position": { "x": 6, "y": 16 }
         }
       },
       {
-        "type": "SHOW_TEXT",
+        "type": "SHOW TEXT",
         "payload": {
           "text": [
             "Ves un coche viejo y destartalado aparcado",
