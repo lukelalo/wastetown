@@ -33,6 +33,12 @@
          "id":2,
          "name":"Top",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"depth",
+                 "type":"int",
+                 "value":10
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":40,
