@@ -16,6 +16,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     return Animations[this.status][this.direction];
   }
 
+  get destination() {
+    return this.state.destination;
+  }
+
   get direction() {
     return this.state.direction;
   }
@@ -49,7 +53,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   get step() {
-    return this.state.path[0];
+    return this.path[0];
+  }
+
+  setFinder(finder) {
+    this.finder = finder;
   }
 
   start() {
@@ -88,16 +96,31 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (this.isWalking) {
-      // Update player position
-      this.updatePosition();
+      if (this.path.length === 0) {
+        this.scene.calculatePath(this.destination.position, (path) => {
+          const step = this.step;
+          if (path === null) {
+            console.warn("Path was not found.");
+          } else {
+            this.scene.playerSetPath({
+              path: [...(step ? [step] : []), ...path.slice(1)],
+            });
+            console.log(path);
+          }
+        });
+      }
+      if (this.path.length > 0) {
+        // Update player position
+        this.updatePosition();
 
-      // Check player position
-      let previousDistance = this.distance;
-      this.distance = this.distanceToPosition(this.x, this.y);
-      if (this.playerAtPosition(this.distance, previousDistance)) {
-        this.distance = 9999;
-        // Move player to exact tile position
-        this.moveToExactPosition();
+        // Check player position
+        let previousDistance = this.distance;
+        this.distance = this.distanceToPosition(this.x, this.y);
+        if (this.playerAtPosition(this.distance, previousDistance)) {
+          this.distance = 9999;
+          // Move player to exact tile position
+          this.moveToExactPosition();
+        }
       }
     }
 
@@ -107,10 +130,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   moveToExactPosition() {
-    const step = this.step || this.position;
-    this.x = this.scene.map.tileToWorldX(step.x);
-    this.y = this.scene.map.tileToWorldY(step.y);
-    this.scene.playerAtPosition(step);
+    const position = this.step || this.position;
+    this.x = this.scene.map.tileToWorldX(position.x);
+    this.y = this.scene.map.tileToWorldY(position.y);
+    this.scene.playerAtPosition({ position });
   }
 
   distanceToPosition(x, y) {

@@ -1,6 +1,10 @@
 import Phaser from "phaser";
 
-import { SCREEN_HEIGHT, SCREEN_WIDTH, LETTER_TIME } from "../constants/game.constants";
+import {
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
+  LETTER_TIME,
+} from "../constants/game.constants";
 import * as actions from "../redux/actions";
 
 export default class Dialog extends Phaser.Scene {
@@ -15,7 +19,7 @@ export default class Dialog extends Phaser.Scene {
   create() {
     this.store = this.game.store;
     this.letterNumber = 0;
-    this.actionText = null;
+    this.dialogText = null;
     this.letterTime = 0;
 
     // Dialog
@@ -28,7 +32,15 @@ export default class Dialog extends Phaser.Scene {
       SCREEN_HEIGHT
     );
     this.background.setVisible(false);
-    this.background.setInteractive(new Phaser.Geom.Rectangle(0, (SCREEN_HEIGHT * 2) / 3, SCREEN_WIDTH, SCREEN_HEIGHT / 3), Phaser.Geom.Rectangle.Contains);
+    this.background.setInteractive(
+      new Phaser.Geom.Rectangle(
+        0,
+        (SCREEN_HEIGHT * 2) / 3,
+        SCREEN_WIDTH,
+        SCREEN_HEIGHT / 3
+      ),
+      Phaser.Geom.Rectangle.Contains
+    );
     this.background.on("pointerdown", this.handleClick, this);
 
     this.text1 = this.add.text(SCREEN_WIDTH / 20, (SCREEN_HEIGHT * 3) / 4, "", {
@@ -42,36 +54,45 @@ export default class Dialog extends Phaser.Scene {
     this.text1.setDepth(50);
     this.text1.setInteractive();
     this.text1.setVisible(false);
-    this.text1.setStyle({wordWrap: { width: SCREEN_WIDTH - SCREEN_WIDTH / 10, useAdvancedWrap: true }});
+    this.text1.setStyle({
+      wordWrap: {
+        width: SCREEN_WIDTH - SCREEN_WIDTH / 10,
+        useAdvancedWrap: true,
+      },
+    });
     this.text1.on("pointerdown", this.handleClick, this);
   }
 
   handleClick(pointer, localX, localY, event) {
-    if (this.letterNumber < this.actionText.length) {
-      this.letterNumber = this.actionText.length;
-      this.text1.setText(this.actionText);
+    if (this.letterNumber < this.dialogText.length) {
+      this.letterNumber = this.dialogText.length;
+      this.text1.setText(this.dialogText);
     } else {
-      this.actionText = null;
+      this.dialogText = null;
       this.letterNumber = 0;
-      this.store.dispatch(actions.videogameNextAction());
+      this.store.dispatch(actions.videogameNextDialog());
     }
     event.stopPropagation();
   }
 
   update(time) {
-    if (this.videogame.actions.length > 0 && this.actionText === null) {
-      const action = this.videogame.actions[0];
-      this.actionText = action.text;
+    if (this.videogame.dialogs.length > 0 && this.dialogText === null) {
+      const dialog = this.videogame.dialogs[0];
+      this.dialogText = dialog.text;
       this.text1.setVisible(true);
       this.background.setVisible(true);
       this.letterTime = time;
-    } else if (this.actionText === null) {
+    } else if (this.dialogText === null) {
       this.text1.setText("");
       this.text1.setVisible(false);
       this.background.setVisible(false);
     }
 
-    if (this.actionText !== null && this.letterNumber < this.actionText.length && time - this.letterTime > LETTER_TIME) {
+    if (
+      this.dialogText !== null &&
+      this.letterNumber < this.dialogText.length &&
+      time - this.letterTime > LETTER_TIME
+    ) {
       this.nextLetter();
       this.letterTime = time;
     }
@@ -79,6 +100,6 @@ export default class Dialog extends Phaser.Scene {
 
   nextLetter() {
     this.letterNumber++;
-    this.text1.setText(this.actionText.substr(0, this.letterNumber));
+    this.text1.setText(this.dialogText.substr(0, this.letterNumber));
   }
 }

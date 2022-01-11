@@ -1,4 +1,5 @@
 import {
+  MOVE_PLAYER,
   PLAYER_ACTION,
   PLAYER_IDLE,
   PLAYER_INIT,
@@ -19,13 +20,26 @@ const _getDirection = (step, position, direction) => {
     : Directions.UP;
 };
 
-export default (state = {}, { type, payload }) => {
+export default (
+  state = { status: Status.IDLE, destination: {}, direction: Directions.UP },
+  { type, payload }
+) => {
   switch (type) {
     case PLAYER_ACTION:
       return {
         ...state,
         direction: payload.direction || state.direction,
         status: Status.ACTING,
+      };
+
+    case PLAYER_INIT:
+      return {
+        ...state,
+        ...payload,
+        isAlive: true,
+        direction: [payload.direction],
+        path: [],
+        status: Status.IDLE,
       };
 
     case PLAYER_IDLE:
@@ -35,14 +49,21 @@ export default (state = {}, { type, payload }) => {
         path: [],
       };
 
-    case PLAYER_INIT:
+    case MOVE_PLAYER:
       return {
         ...state,
-        ...payload,
-        isAlive: true,
-        direction: [payload.direction],
-        path: [payload.position],
-        status: Status.IDLE,
+        direction: _getDirection(
+          payload.position,
+          state.position,
+          state.direction
+        ),
+        destination: payload,
+        path: state.path.slice(0, 1),
+        status:
+          payload.position.x !== state.position.x ||
+          payload.position.y !== state.position.y
+            ? Status.WALKING
+            : Status.IDLE,
       };
 
     case PLAYER_PATH:
@@ -59,18 +80,19 @@ export default (state = {}, { type, payload }) => {
             status: payload.path.length > 0 ? Status.WALKING : Status.IDLE,
           };
 
-    case PLAYER_POSITION:
+    case PLAYER_POSITION: {
+      const atDestination = state.path.length < 2;
       return {
         ...state,
-        direction: _getDirection(
-          state.path.slice(1)[0],
-          payload,
-          state.direction
-        ),
-        position: payload,
+        destination: atDestination ? {} : state.destination,
+        direction: atDestination
+          ? state.destination.direction || state.direction
+          : _getDirection(state.path[1], payload.position, state.direction),
         path: state.path.slice(1),
-        status: state.path.length > 1 ? Status.WALKING : Status.IDLE,
+        position: payload.position,
+        status: atDestination ? Status.IDLE : Status.WALKING,
       };
+    }
 
     default:
       return state;

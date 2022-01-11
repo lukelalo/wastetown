@@ -29,6 +29,22 @@ export const videogameNextAction = (payload) => ({
   payload,
 });
 
+export const VIDEOGAME_NEXT_DIALOG = "VIDEOGAME NEXT DIALOG";
+export const videogameNextDialog = (payload) => ({
+  type: VIDEOGAME_NEXT_DIALOG,
+  payload,
+});
+
+export const VIDEOGAME_SET_ACTIONS = "VIDEOGAME SET ACTIONS";
+export const videogameSetActions = (payload) => ({
+  type: VIDEOGAME_SET_ACTIONS,
+  payload,
+});
+
 // Quest actions
 export const QUEST_DONE = "QUEST DONE";
 export const questDone = (payload) => ({ type: QUEST_DONE, payload });
+
+// GAME ACTIONS
+export const MOVE_PLAYER = "MOVE_PLAYER";
+export const movePlayer = (payload) => ({ type: MOVE_PLAYER, payload });

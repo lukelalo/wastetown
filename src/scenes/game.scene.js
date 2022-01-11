@@ -7,11 +7,15 @@ import * as actions from "../redux/actions";
 
 export default class Game extends Phaser.Scene {
   constructor() {
-    super({key: "Game"});
+    super({ key: "Game" });
   }
 
   init(props) {
-    const { map = "city", position = {x: 12, y: 19}, direction = Directions.DOWN } = props;
+    const {
+      map = "city",
+      position = { x: 12, y: 19 },
+      direction = Directions.DOWN,
+    } = props;
     this.currentMap = map;
     this.initialPosition = position;
     this.initialDirection = direction;
@@ -42,8 +46,15 @@ export default class Game extends Phaser.Scene {
     console.info("POST MAP EVENTS", this.mapEvents);
     this.scale = this.getProperty(this.map, "scale");
     let tilesetName = this.getProperty(this.map, "tileset");
-    let tileset = this.map.tilesets.find(item => item.name === tilesetName);
-    let tilesetImage = this.map.addTilesetImage(tilesetName, tilesetName, tileset.tileWidth, tileset.tileHeight, tileset.tileMargin, tileset.tileSpacing);
+    let tileset = this.map.tilesets.find((item) => item.name === tilesetName);
+    let tilesetImage = this.map.addTilesetImage(
+      tilesetName,
+      tilesetName,
+      tileset.tileWidth,
+      tileset.tileHeight,
+      tileset.tileMargin,
+      tileset.tileSpacing
+    );
     const TILE_WIDTH = this.map.tileWidth;
     const TILE_HEIGHT = this.map.tileHeight;
 
@@ -129,10 +140,16 @@ export default class Game extends Phaser.Scene {
     this.finder.setGrid(grid);
 
     // Player
-    this.dispatch(actions.playerInit({ position: this.initialPosition, direction: this.initialDirection }));
+    this.dispatch(
+      actions.playerInit({
+        position: this.initialPosition,
+        direction: this.initialDirection,
+      })
+    );
     this.player = new Player(this);
     this.player.setScale(this.scale);
     this.player.moveToExactPosition();
+    this.player.setFinder(this.finder);
 
     // Camera
     this.camera = this.cameras.main;
@@ -166,7 +183,9 @@ export default class Game extends Phaser.Scene {
     var pointerTileY = this.map.worldToTileY(worldPoint.y);
     this.marker.x = this.map.tileToWorldX(pointerTileX);
     this.marker.y = this.map.tileToWorldY(pointerTileY);
-    this.marker.setVisible(!this.player.isActing && !this.checkCollision(pointerTileX, pointerTileY));
+    this.marker.setVisible(
+      !this.player.isActing && !this.checkCollision(pointerTileX, pointerTileY)
+    );
   }
 
   start() {
@@ -182,22 +201,25 @@ export default class Game extends Phaser.Scene {
     const y = this.map.worldToTileY(this.camera.scrollY + pointer.y);
 
     if (!this.checkCollision(x, y)) {
-      this.calculatePath({ x, y }, (path) => {
-        const { step } = this.player;
-        if (path === null) {
-          console.warn("Path was not found.");
-        } else {
-          this.dispatch(
-            actions.playerPath({
-              path: [...(step ? [step] : []), ...path.slice(1)],
-            })
-          );
-          console.log(path);
-        }
-      });
+      this.dispatch(actions.movePlayer({ position: { x, y } }));
+      // this.calculatePath({ x, y }, (path) => {
+      //   const { step } = this.player;
+      //   if (path === null) {
+      //     console.warn("Path was not found.");
+      //   } else {
+      //     this.dispatch(
+      //       actions.playerPath({
+      //         path: [...(step ? [step] : []), ...path.slice(1)],
+      //       })
+      //     );
+      //     console.log(path);
+      //   }
+      // });
     } else {
       // Tile with collision, could be interactive
-      const eventAtPosition = this.mapEvents.find(e => e.clickAt?.x === x && e.clickAt?.y === y);
+      const eventAtPosition = this.mapEvents.find(
+        (e) => e.clickAt?.x === x && e.clickAt?.y === y
+      );
       if (eventAtPosition) {
         // Execute actions from event
         this.executeEventActions(eventAtPosition.actions);
@@ -205,7 +227,8 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  executeEventActions(actions) {
+  executeEventActions(eventActions) {
+    this.dispatch(actions.videogameSetActions(eventActions));
     // Chain actions to be executed one after another
   }
 
@@ -222,8 +245,12 @@ export default class Game extends Phaser.Scene {
     this.finder.calculate();
   }
 
-  playerAtPosition({ x, y }) {
-    this.dispatch(actions.playerPosition({ x, y }));
+  playerAtPosition(payload) {
+    this.dispatch(actions.playerPosition(payload));
+  }
+
+  playerSetPath(payload) {
+    this.dispatch(actions.playerPath(payload));
   }
 
   checkCollision(x, y) {
