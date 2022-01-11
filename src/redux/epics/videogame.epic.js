@@ -31,6 +31,12 @@ export const setActionsEpic = (action$, state$) =>
     map(([action, { videogame }]) => videogame.actions[0])
   );
 
+export const changeSceneEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(actions.CHANGE_SCENE),
+    mapTo(actions.videogameNextAction())
+  );
+
 export const movePlayerEpic = (action$, state$) =>
   action$.pipe(
     ofType(actions.MOVE_PLAYER),
@@ -93,6 +99,7 @@ export const showTextEpic = (action$, state$) =>
 export const epics = [
   nextActionEpic,
   setActionsEpic,
+  changeSceneEpic,
   movePlayerEpic,
   showTextEpic,
 ];

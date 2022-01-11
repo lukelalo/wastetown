@@ -46,6 +46,7 @@ export default (
     case PLAYER_IDLE:
       return {
         ...state,
+        destination: {},
         status: Status.IDLE,
         path: [],
       };
