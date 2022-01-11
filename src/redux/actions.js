@@ -48,3 +48,6 @@ export const questDone = (payload) => ({ type: QUEST_DONE, payload });
 // GAME ACTIONS
 export const MOVE_PLAYER = "MOVE_PLAYER";
 export const movePlayer = (payload) => ({ type: MOVE_PLAYER, payload });
+
+export const SHOW_TEXT = "SHOW_TEXT";
+export const showText = (payload) => ({ type: SHOW_TEXT, payload });

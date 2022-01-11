@@ -78,7 +78,7 @@ export default class Dialog extends Phaser.Scene {
   update(time) {
     if (this.videogame.dialogs.length > 0 && this.dialogText === null) {
       const dialog = this.videogame.dialogs[0];
-      this.dialogText = dialog.text;
+      this.dialogText = dialog;
       this.text1.setVisible(true);
       this.background.setVisible(true);
       this.letterTime = time;

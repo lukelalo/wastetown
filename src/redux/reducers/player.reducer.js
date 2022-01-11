@@ -49,7 +49,11 @@ export default (
         path: [],
       };
 
-    case MOVE_PLAYER:
+    case MOVE_PLAYER: {
+      const atDestination =
+        payload.position.x !== state.position.x ||
+        payload.position.y !== state.position.y;
+
       return {
         ...state,
         direction: _getDirection(
@@ -57,14 +61,11 @@ export default (
           state.position,
           state.direction
         ),
-        destination: payload,
+        destination: atDestination ? {} : payload,
         path: state.path.slice(0, 1),
-        status:
-          payload.position.x !== state.position.x ||
-          payload.position.y !== state.position.y
-            ? Status.WALKING
-            : Status.IDLE,
+        status: atDestination ? Status.WALKING : Status.IDLE,
       };
+    }
 
     case PLAYER_PATH:
       return state.status !== Status.IDLE && state.status !== Status.WALKING
@@ -81,7 +82,11 @@ export default (
           };
 
     case PLAYER_POSITION: {
-      const atDestination = state.path.length < 2;
+      // const atDestination = state.path.length < 2;
+      const atDestination =
+        !state.destination.position ||
+        (state.destination.position.x === payload.position.x &&
+          state.destination.position.y === payload.position.y);
       return {
         ...state,
         destination: atDestination ? {} : state.destination,

@@ -1,8 +1,10 @@
 import {
   PLAYER_ACTION,
   PLAYER_IDLE,
+  SHOW_TEXT,
   VIDEOGAME_NEXT_ACTION,
   VIDEOGAME_NEXT_DIALOG,
+  VIDEOGAME_SET_ACTIONS,
 } from "../actions";
 
 export default (state = { actions: [], dialogs: [] }, { type, payload }) => {
@@ -18,10 +20,10 @@ export default (state = { actions: [], dialogs: [] }, { type, payload }) => {
     //     actions: [],
     //   };
 
-    case VIDEOGAME_NEXT_ACTION:
+    case SHOW_TEXT:
       return {
         ...state,
-        actions: state.actions.slice(1),
+        dialogs: payload.text,
       };
 
     case VIDEOGAME_NEXT_ACTION:
@@ -34,6 +36,12 @@ export default (state = { actions: [], dialogs: [] }, { type, payload }) => {
       return {
         ...state,
         dialogs: state.dialogs.slice(1),
+      };
+
+    case VIDEOGAME_SET_ACTIONS:
+      return {
+        ...state,
+        actions: payload,
       };
 
     default:

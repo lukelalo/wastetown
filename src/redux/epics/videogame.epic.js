@@ -37,22 +37,28 @@ export const movePlayerEpic = (action$, state$) =>
     withLatestFrom(state$),
     // Switch to the last Interact action
     switchMap(([{ payload }, { player }]) =>
-      race(
-        action$.pipe(
-          ofType(actions.PLAYER_POSITION),
-          filter(
-            (action) =>
-              action.payload.x === payload.position.x &&
-              action.payload.y === payload.position.y
+      iif(
+        () =>
+          payload.position.x === player.position.x &&
+          payload.position.y === player.position.y,
+        of(actions.videogameNextAction()),
+        race(
+          action$.pipe(
+            ofType(actions.PLAYER_POSITION),
+            filter(
+              (action) =>
+                action.payload.position.x === payload.position.x &&
+                action.payload.position.y === payload.position.y
+            ),
+            mapTo(actions.videogameNextAction()),
+            take(1)
           ),
-          mapTo(actions.videogameNextAction()),
-          take(1)
-        ),
-        action$.pipe(ofType(actions.MOVE_PLAYER), take(1), ignoreElements()),
-        action$.pipe(
-          ofType(actions.VIDEOGAME_SET_ACTIONS),
-          take(1),
-          ignoreElements()
+          action$.pipe(ofType(actions.MOVE_PLAYER), take(1), ignoreElements()),
+          action$.pipe(
+            ofType(actions.VIDEOGAME_SET_ACTIONS),
+            take(1),
+            ignoreElements()
+          )
         )
       )
     )
