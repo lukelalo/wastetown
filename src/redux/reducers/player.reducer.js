@@ -5,6 +5,7 @@ import {
   PLAYER_INIT,
   PLAYER_PATH,
   PLAYER_POSITION,
+  SHOW_TEXT,
 } from "../actions";
 import { Directions, Status } from "../../constants/game.constants";
 
@@ -65,6 +66,12 @@ export default (
         path: state.path.slice(0, 1),
       };
     }
+
+    case SHOW_TEXT:
+      return {
+        ...state,
+        status: Status.ACTING,
+      };
 
     case PLAYER_PATH:
       return state.status !== Status.IDLE && state.status !== Status.WALKING
