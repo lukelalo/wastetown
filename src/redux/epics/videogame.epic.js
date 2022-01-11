@@ -53,7 +53,6 @@ export const movePlayerEpic = (action$, state$) =>
             mapTo(actions.videogameNextAction()),
             take(1)
           ),
-          action$.pipe(ofType(actions.MOVE_PLAYER), take(1), ignoreElements()),
           action$.pipe(
             ofType(actions.VIDEOGAME_SET_ACTIONS),
             take(1),
@@ -81,7 +80,6 @@ export const showTextEpic = (action$, state$) =>
             mapTo(actions.videogameNextAction()),
             take(1)
           ),
-          action$.pipe(ofType(actions.SHOW_TEXT), take(1), ignoreElements()),
           action$.pipe(
             ofType(actions.VIDEOGAME_SET_ACTIONS),
             take(1),

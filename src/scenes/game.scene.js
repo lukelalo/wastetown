@@ -201,20 +201,12 @@ export default class Game extends Phaser.Scene {
     const y = this.map.worldToTileY(this.camera.scrollY + pointer.y);
 
     if (!this.checkCollision(x, y)) {
-      this.dispatch(actions.movePlayer({ position: { x, y } }));
-      // this.calculatePath({ x, y }, (path) => {
-      //   const { step } = this.player;
-      //   if (path === null) {
-      //     console.warn("Path was not found.");
-      //   } else {
-      //     this.dispatch(
-      //       actions.playerPath({
-      //         path: [...(step ? [step] : []), ...path.slice(1)],
-      //       })
-      //     );
-      //     console.log(path);
-      //   }
-      // });
+      this.dispatch(
+        actions.videogameSetActions([
+          actions.movePlayer({ position: { x, y } }),
+        ])
+      );
+      // this.dispatch(actions.movePlayer({ position: { x, y } }));
     } else {
       // Tile with collision, could be interactive
       const eventAtPosition = this.mapEvents.find(
