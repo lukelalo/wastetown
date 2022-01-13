@@ -219,9 +219,11 @@ export default class Game extends Phaser.Scene {
   }
 
   playerAtPosition(payload) {
-    this.dispatch(actions.playerPosition(payload));
     // Check event at current position
     this.checkEventAtPosition(payload, "at");
+
+    // Send player position action
+    this.dispatch(actions.playerPosition(payload));
   }
 
   playerSetPath(payload) {
