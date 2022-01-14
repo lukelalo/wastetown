@@ -1,6 +1,7 @@
 [
   {
     "description": "Exit Town Hall Left",
+    "launcher": "POSITION",
     "at": { "x": 19, "y": 19 },
     "actions": [
       {
@@ -15,6 +16,7 @@
   },
   {
     "description": "Exit Town Hall Right",
+    "launcher": "POSITION",
     "at": { "x": 20, "y": 19 },
     "actions": [
       {

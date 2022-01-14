@@ -23,6 +23,18 @@ export const playerPosition = (payload) => ({ type: PLAYER_POSITION, payload });
 // Town actions
 
 // Videogame actions
+export const VIDEOGAME_ENABLE_CLICK = "VIDEOGAME ENABLE CLICK";
+export const videogameEnableClick = (payload) => ({
+  type: VIDEOGAME_ENABLE_CLICK,
+  payload,
+});
+
+export const VIDEOGAME_DISABLE_CLICK = "VIDEOGAME DISABLE CLICK";
+export const videogameDisableClick = (payload) => ({
+  type: VIDEOGAME_DISABLE_CLICK,
+  payload,
+});
+
 export const VIDEOGAME_NEXT_ACTION = "VIDEOGAME NEXT ACTION";
 export const videogameNextAction = (payload) => ({
   type: VIDEOGAME_NEXT_ACTION,
@@ -41,9 +53,12 @@ export const videogameSetActions = (payload) => ({
   payload,
 });
 
-// Quest actions
-export const QUEST_DONE = "QUEST DONE";
-export const questDone = (payload) => ({ type: QUEST_DONE, payload });
+// Event actions
+export const EVENTS_INIT = "EVENTS INIT";
+export const eventsInit = (payload) => ({ type: EVENTS_INIT, payload });
+
+export const EVENTS_DONE = "EVENTS DONE";
+export const eventsDone = (payload) => ({ type: EVENTS_DONE, payload });
 
 // GAME ACTIONS
 export const MOVE_PLAYER = "MOVE PLAYER";

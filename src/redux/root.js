@@ -4,7 +4,7 @@ import { epics as trapEpics } from "./epics/traps.epic";
 import { epics as playerEpics } from "./epics/player.epic";
 import { epics as videogameEpics } from "./epics/videogame.epic";
 import player from "./reducers/player.reducer";
-import quests from "./reducers/quests.reducer";
+import events from "./reducers/events.reducer";
 import map from "./reducers/map.reducer";
 import videogame from "./reducers/videogame.reducer";
 
@@ -16,7 +16,7 @@ export const rootEpic = combineEpics(
 
 export const rootReducer = combineReducers({
   player,
-  quests,
+  events,
   map,
   videogame,
 });

@@ -15,11 +15,14 @@ export const nextActionEpic = (action$, state$) =>
   action$.pipe(
     ofType(actions.VIDEOGAME_NEXT_ACTION),
     withLatestFrom(state$),
-    switchMap(([action, { videogame }]) =>
+    switchMap(([action, { videogame, map }]) =>
       iif(
         () => videogame.actions.length === 0,
         of(actions.playerIdle()),
-        of(videogame.actions[0])
+        of({
+          ...videogame.actions[0],
+          payload: { ...(videogame.actions[0]?.payload || {}), map: map.name },
+        })
       )
     )
   );
@@ -28,12 +31,40 @@ export const setActionsEpic = (action$, state$) =>
   action$.pipe(
     ofType(actions.VIDEOGAME_SET_ACTIONS),
     withLatestFrom(state$),
-    map(([action, { videogame }]) => videogame.actions[0])
+    map(([action, { videogame, map }]) => ({
+      ...videogame.actions[0],
+      payload: { ...(videogame.actions[0]?.payload || {}), map: map.name },
+    }))
   );
 
 export const changeSceneEpic = (action$, state$) =>
   action$.pipe(
     ofType(actions.CHANGE_SCENE),
+    mapTo(actions.videogameNextAction())
+  );
+
+export const eventsDoneEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(actions.EVENTS_DONE),
+    mapTo(actions.videogameNextAction())
+  );
+
+
+  export const enableClickEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(actions.VIDEOGAME_ENABLE_CLICK),
+    mapTo(actions.videogameNextAction())
+  );
+
+  export const disableClickEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(actions.VIDEOGAME_DISABLE_CLICK),
+    mapTo(actions.videogameNextAction())
+  );
+
+export const playerActionEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(actions.PLAYER_ACTION),
     mapTo(actions.videogameNextAction())
   );
 
@@ -97,8 +128,12 @@ export const showTextEpic = (action$, state$) =>
   );
 
 export const epics = [
+  enableClickEpic,
+  disableClickEpic,
   nextActionEpic,
   setActionsEpic,
+  playerActionEpic,
+  eventsDoneEpic,
   changeSceneEpic,
   movePlayerEpic,
   showTextEpic,

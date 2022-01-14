@@ -1,6 +1,45 @@
 [
   {
+    "id": "animation001",
+    "description": "Start game animation",
+    "launcher": "START",
+    "actions": [
+      {
+        "type": "VIDEOGAME DISABLE CLICK",
+        "payload": {}
+      },
+      {
+        "type": "MOVE PLAYER",
+        "payload": {
+          "name": "townHall",
+          "direction": "DOWN",
+          "position": { "x": 19, "y": 18 }
+        }
+      },
+      {
+        "type": "EVENTS DONE",
+        "payload": {
+          "id": "animation001"
+        }
+      },
+      {
+        "type": "SHOW TEXT",
+        "payload": {
+          "text": [
+            "Vaya, parece que esta ciudad está hecha un desastre",
+            "Fíjate cuanto desperdicio hay por todas partes",
+            "Me parece que no les vendría mal un poco de ayuda"]
+        }
+      },
+      {
+        "type": "VIDEOGAME ENABLE CLICK",
+        "payload": {}
+      }
+    ]
+  },
+  {
     "description": "Enter Town Hall Left",
+    "launcher": "POSITION",
     "at": { "x": 16, "y": 16 },
     "actions": [
       {
@@ -15,6 +54,7 @@
   },
   {
     "description": "Enter Town Hall Right",
+    "launcher": "POSITION",
     "at": { "x": 17, "y": 16 },
     "actions": [
       {
@@ -29,7 +69,9 @@
   },
   {
     "description": "Wastebin",
-    "clickAt": { "x": 12, "y": 18 },
+    "id": "dialog001",
+    "launcher": "CLICK",
+    "at": { "x": 12, "y": 18 },
     "actions": [
       {
         "type": "MOVE PLAYER",
@@ -48,7 +90,9 @@
   },
   {
     "description": "Smokey car",
-    "clickAt": { "x": 7, "y": 16 },
+    "id": "dialog002",
+    "launcher": "CLICK",
+    "at": { "x": 7, "y": 16 },
     "actions": [
       {
         "type": "MOVE PLAYER",
@@ -64,6 +108,12 @@
             "Ves un coche viejo y destartalado aparcado",
             "No sabes cómo, pero continúa echando humo por el tubo de escape"
           ]
+        }
+      },
+      {
+        "type": "EVENTS DONE",
+        "payload": {
+          "id": "dialog002"
         }
       }
     ]

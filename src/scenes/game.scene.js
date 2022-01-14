@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-import { COLLISION, Directions } from "../constants/game.constants";
+import { COLLISION } from "../constants/game.constants";
 import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
 import * as actions from "../redux/actions";
@@ -14,8 +14,8 @@ export default class Game extends Phaser.Scene {
     return this.store.getState()["videogame"];
   }
 
-  get quests() {
-    return this.store.getState()["quests"];
+  get eventList() {
+    return this.store.getState()["events"][this.currentMap.name];
   }
 
   get currentMap() {
@@ -27,7 +27,13 @@ export default class Game extends Phaser.Scene {
     let stage = this;
     this.map = this.make.tilemap({ key: this.currentMap.name });
     this.mapName = this.currentMap.name;
-    this.mapEvents = this.game.cache.json.get(`${this.currentMap.name}Events`);
+    this.dispatch(
+      actions.eventsInit({
+        [this.currentMap.name]: this.game.cache.json.get(
+          `${this.currentMap.name}Events`
+        ),
+      })
+    );
     this.scale = this.getProperty(this.map, "scale");
     let tilesetName = this.getProperty(this.map, "tileset");
     let tileset = this.map.tilesets.find((item) => item.name === tilesetName);
@@ -78,7 +84,6 @@ export default class Game extends Phaser.Scene {
     // Marker to show player destination
     this.destination = this.add.graphics();
     this.destination.lineStyle(1, 0xffff00, 1);
-    //this.destination.strokeRect(0, 0, TILE_WIDTH, TILE_HEIGHT);
     this.destination.lineBetween(5, 5, TILE_WIDTH - 5, TILE_HEIGHT - 5);
     this.destination.lineBetween(TILE_WIDTH - 5, 5, 5, TILE_HEIGHT - 5);
     this.destination.setVisible(false);
@@ -158,7 +163,7 @@ export default class Game extends Phaser.Scene {
     this.marker.x = this.map.tileToWorldX(pointerTileX);
     this.marker.y = this.map.tileToWorldY(pointerTileY);
     this.marker.setVisible(
-      !this.player.isActing && !this.checkCollision(pointerTileX, pointerTileY)
+      this.videogame.clicks && !this.player.isActing && !this.checkCollision(pointerTileX, pointerTileY)
     );
 
     // Check map name
@@ -169,12 +174,19 @@ export default class Game extends Phaser.Scene {
 
   start() {
     this.player.start();
+    this.executeEventActions(
+      (
+        this.eventList.find((e) => !e.done && e.launcher === "START") || {
+          actions: [],
+        }
+      ).actions
+    );
     this.input.on("pointerdown", this.handleClick, this);
   }
 
   handleClick(pointer) {
     // Avoid pointers on actions
-    if (this.player.isActing) return;
+    if (this.player.isActing || !this.videogame.clicks) return;
 
     const x = this.map.worldToTileX(this.camera.scrollX + pointer.x);
     const y = this.map.worldToTileY(this.camera.scrollY + pointer.y);
@@ -187,14 +199,17 @@ export default class Game extends Phaser.Scene {
       );
     } else {
       // Check event when clicking at position
-      this.checkEventAtPosition({position: {x, y}}, "clickAt");
+      this.checkEventAtPosition({ position: { x, y } }, "CLICK");
     }
   }
 
-  checkEventAtPosition(payload, coordinates) {
-    const eventAtPosition = this.mapEvents.find(
-      (e) => e[coordinates]?.x === payload.position.x && e[coordinates]?.y === payload.position.y
-    );
+  checkEventAtPosition(payload, launcher) {
+    const eventAtPosition = this.eventList
+      .filter((e) => !e.done)
+      .filter((e) => e.launcher === launcher)
+      .find(
+        (e) => e.at?.x === payload.position.x && e.at?.y === payload.position.y
+      );
     if (eventAtPosition) {
       // Execute actions from event
       this.executeEventActions(eventAtPosition.actions);
@@ -202,7 +217,9 @@ export default class Game extends Phaser.Scene {
   }
 
   executeEventActions(eventActions) {
-    this.dispatch(actions.videogameSetActions(eventActions));
+    if (eventActions.length > 0) {
+      this.dispatch(actions.videogameSetActions(eventActions));
+    }
   }
 
   calculatePath({ x, y }, callback) {
@@ -211,7 +228,7 @@ export default class Game extends Phaser.Scene {
     const fromY = step ? step.y : position.y;
     this.destination.x = this.map.tileToWorldX(x);
     this.destination.y = this.map.tileToWorldY(y);
-    this.destination.setVisible(true);
+    this.destination.setVisible(this.videogame.clicks);
 
     console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
     this.finder.findPath(fromX, fromY, x, y, callback);
@@ -220,7 +237,7 @@ export default class Game extends Phaser.Scene {
 
   playerAtPosition(payload) {
     // Check event at current position
-    this.checkEventAtPosition(payload, "at");
+    this.checkEventAtPosition(payload, "POSITION");
 
     // Send player position action
     this.dispatch(actions.playerPosition(payload));
