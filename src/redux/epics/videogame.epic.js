@@ -10,66 +10,65 @@ import {
 } from "rxjs/operators";
 import { race, of, iif } from "rxjs";
 import * as actions from "../actions";
+import * as behavior from "../reducers/behavior";
+import * as dialogs from "../reducers/dialogs";
+import * as player from "../reducers/player";
 
-export const nextActionEpic = (action$, state$) =>
+export const behaviorNextEpic = (action$, state$) =>
   action$.pipe(
-    ofType(actions.VIDEOGAME_NEXT_ACTION),
+    ofType(behavior.NEXT),
     withLatestFrom(state$),
-    switchMap(([action, { videogame, map }]) =>
+    switchMap(([action, { behavior, map }]) =>
       iif(
-        () => videogame.actions.length === 0,
-        of(actions.playerIdle()),
+        () => behavior.length === 0,
+        of(player.idle()),
         of({
-          ...videogame.actions[0],
-          payload: { ...(videogame.actions[0]?.payload || {}), map: map.name },
+          ...behavior[0],
+          map: map.name,
         })
       )
     )
   );
 
-export const setActionsEpic = (action$, state$) =>
+export const behaviorSetEpic = (action$, state$) =>
   action$.pipe(
-    ofType(actions.VIDEOGAME_SET_ACTIONS),
+    ofType(behavior.SET),
     withLatestFrom(state$),
-    map(([action, { videogame, map }]) => ({
-      ...videogame.actions[0],
-      payload: { ...(videogame.actions[0]?.payload || {}), map: map.name },
+    map(([action, { behavior, map }]) => ({
+      ...behavior[0],
+      map: map.name,
     }))
   );
 
 export const instantEventEpic = (action$, state$) =>
   action$.pipe(
     filter(({ payload }) => payload?.instant),
-    mapTo(actions.videogameNextAction())
+    mapTo(behavior.next())
   );
 
 export const movePlayerEpic = (action$, state$) =>
   action$.pipe(
-    ofType(actions.MOVE_PLAYER),
+    ofType(player.MOVE),
     withLatestFrom(state$),
     // Switch to the last Interact action
-    switchMap(([{ payload }, { player }]) =>
+    switchMap(([{ payload }, state]) =>
       iif(
         () =>
-          payload.position.x === player.position.x &&
-          payload.position.y === player.position.y,
-        of(actions.videogameNextAction()),
+          payload.position.x === state.player.position.x &&
+          payload.position.y === state.player.position.y,
+        of(behavior.next()),
         race(
           action$.pipe(
-            ofType(actions.PLAYER_POSITION),
+            ofType(player.POSITION),
             filter(
               (action) =>
                 action.payload.position.x === payload.position.x &&
                 action.payload.position.y === payload.position.y
             ),
-            mapTo(actions.videogameNextAction()),
+            mapTo(behavior.next()),
             take(1)
           ),
-          action$.pipe(
-            ofType(actions.VIDEOGAME_SET_ACTIONS),
-            take(1),
-            ignoreElements()
-          )
+          action$.pipe(ofType(behavior.SET), take(1), ignoreElements())
         )
       )
     )
@@ -77,26 +76,22 @@ export const movePlayerEpic = (action$, state$) =>
 
 export const showTextEpic = (action$, state$) =>
   action$.pipe(
-    ofType(actions.SHOW_TEXT),
+    ofType(dialogs.SET),
     withLatestFrom(state$),
     // Switch to the last Interact action
-    switchMap(([{ payload }, { videogame }]) =>
+    switchMap(([{ payload }, state]) =>
       iif(
-        () => videogame.dialogs.length === 0,
-        of(actions.videogameNextAction()),
+        () => state.dialogs.length === 0,
+        of(behavior.next()),
         race(
           action$.pipe(
-            ofType(actions.VIDEOGAME_NEXT_DIALOG),
+            ofType(dialogs.NEXT),
             withLatestFrom(state$),
-            filter(([action, { videogame }]) => videogame.dialogs.length === 0),
-            mapTo(actions.videogameNextAction()),
+            filter(([action, state]) => state.dialogs.length === 0),
+            mapTo(behavior.next()),
             take(1)
           ),
-          action$.pipe(
-            ofType(actions.VIDEOGAME_SET_ACTIONS),
-            take(1),
-            ignoreElements()
-          )
+          action$.pipe(ofType(behavior.SET), take(1), ignoreElements())
         )
       )
     )
@@ -105,7 +100,7 @@ export const showTextEpic = (action$, state$) =>
 export const epics = [
   instantEventEpic,
   movePlayerEpic,
-  nextActionEpic,
-  setActionsEpic,
+  behaviorNextEpic,
+  behaviorSetEpic,
   showTextEpic,
 ];

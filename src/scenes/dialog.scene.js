@@ -6,6 +6,8 @@ import {
   LETTER_TIME,
 } from "../constants/game.constants";
 import * as actions from "../redux/actions";
+import * as behavior from "../redux/reducers/behavior";
+import * as dialogs from "../redux/reducers/dialogs";
 
 export default class Dialog extends Phaser.Scene {
   constructor() {
@@ -15,6 +17,16 @@ export default class Dialog extends Phaser.Scene {
   get videogame() {
     return this.store.getState()["videogame"];
   }
+
+  get dialogs() {
+    return this.store.getState()["dialogs"];
+  }
+
+  get state() {
+    return this.store.getState();
+  }
+
+
 
   create() {
     this.store = this.game.store;
@@ -56,7 +68,7 @@ export default class Dialog extends Phaser.Scene {
     } else {
       this.dialogText = null;
       this.letterNumber = 0;
-      this.store.dispatch(actions.videogameNextDialog());
+      this.store.dispatch(dialogs.next());
       this.background.setVisible(false);
     }
     event.stopPropagation();
@@ -64,7 +76,7 @@ export default class Dialog extends Phaser.Scene {
 
   update(time) {
     // Dialogs
-    if (this.videogame.dialogs.length > 0 && this.dialogText === null) {
+    if (this.dialogs.length > 0 && this.dialogText === null) {
       this.showDialogs(time);
     } else if (this.dialogText === null) {
       this.hideDialogs();
@@ -72,7 +84,7 @@ export default class Dialog extends Phaser.Scene {
 
     // Choices
     if (
-      (this.videogame.choices || []).length > 0 &&
+      (this.state.choices || []).length > 0 &&
       this.choices.length === 0
     ) {
       this.showChoices();
@@ -83,7 +95,7 @@ export default class Dialog extends Phaser.Scene {
   }
 
   showDialogs(time) {
-    const dialog = this.videogame.dialogs[0];
+    const dialog = this.dialogs[0];
     this.dialogText = dialog;
     this.text1.setVisible(true);
     this.background.setVisible(true);
@@ -112,7 +124,7 @@ export default class Dialog extends Phaser.Scene {
   }
 
   showChoices() {
-    let choices = this.videogame.choices;
+    let choices = this.state.choices;
     let position = 0;
     this.choices = choices.map((choice) => {
       let choiceText = this.generateText(choice.text, position++);
@@ -135,7 +147,7 @@ export default class Dialog extends Phaser.Scene {
     });
     this.choices = [];
     this.background.setVisible(false);
-    this.store.dispatch(actions.videogameSetActions(choiceActions));
+    this.store.dispatch(behavior.set(choiceActions));
   }
 
   generateText(text, position) {

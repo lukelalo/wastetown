@@ -1,14 +1,26 @@
-import {
-  MOVE_PLAYER,
-  PLAYER_ACTION,
-  PLAYER_IDLE,
-  PLAYER_INIT,
-  PLAYER_PATH,
-  PLAYER_POSITION,
-  SHOW_CHOICES,
-  SHOW_TEXT,
-} from "../actions";
 import { Directions, Status } from "../../constants/game.constants";
+
+import * as choices from "./choices";
+import * as dialogs from "./dialogs";
+
+// Player actions
+export const ACTION = "PLAYER ACTION";
+export const action = (payload) => ({ type: ACTION, payload });
+
+export const IDLE = "PLAYER IDLE";
+export const idle = () => ({ type: IDLE });
+
+export const INIT = "PLAYER INIT";
+export const init = (payload) => ({ type: INIT, payload });
+
+export const PATH = "PLAYER PATH";
+export const path = (payload) => ({ type: PATH, payload });
+
+export const POSITION = "PLAYER POSITION";
+export const position = (payload) => ({ type: POSITION, payload });
+
+export const MOVE = "PLAYER MOVE";
+export const move = (payload) => ({ type: MOVE, payload });
 
 const _getDirection = (step, position, direction) => {
   return !step
@@ -27,14 +39,14 @@ export default (
   { type, payload }
 ) => {
   switch (type) {
-    case PLAYER_ACTION:
+    case ACTION:
       return {
         ...state,
         direction: payload.direction || state.direction,
         status: Status.ACTING,
       };
 
-    case PLAYER_INIT:
+    case INIT:
       return {
         ...state,
         ...payload,
@@ -44,7 +56,7 @@ export default (
         status: Status.IDLE,
       };
 
-    case PLAYER_IDLE:
+    case IDLE:
       return {
         ...state,
         destination: {},
@@ -52,7 +64,7 @@ export default (
         path: [],
       };
 
-    case MOVE_PLAYER: {
+    case MOVE: {
       const atDestination =
         payload.position.x === state.position.x &&
         payload.position.y === state.position.y;
@@ -60,18 +72,18 @@ export default (
       return {
         ...state,
         destination: atDestination ? {} : payload,
-        path: state.path.slice(0, 1)
+        path: state.path.slice(0, 1),
       };
     }
 
-    case SHOW_TEXT:
-    case SHOW_CHOICES:
+    case dialogs.SET:
+    case choices.SET:
       return {
         ...state,
         status: Status.ACTING,
       };
 
-    case PLAYER_PATH:
+    case PATH:
       return state.status !== Status.IDLE && state.status !== Status.WALKING
         ? state
         : {
@@ -85,7 +97,7 @@ export default (
             status: payload.path.length > 0 ? Status.WALKING : Status.IDLE,
           };
 
-    case PLAYER_POSITION: {
+    case POSITION: {
       const atDestination =
         !state.destination.position ||
         (state.destination.position.x === payload.position.x &&

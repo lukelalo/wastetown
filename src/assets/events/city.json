@@ -1,6 +1,7 @@
 [
   {
     "id": "animation001",
+    "done": true,
     "description": "Start game animation",
     "launcher": "START",
     "actions": [
@@ -11,7 +12,7 @@
         }
       },
       {
-        "type": "MOVE PLAYER",
+        "type": "PLAYER MOVE",
         "payload": {
           "name": "townHall",
           "direction": "DOWN",
@@ -19,12 +20,17 @@
         }
       },
       {
-        "type": "SHOW TEXT",
+        "type": "DIALOGS SET",
+        "payload": [
+          "Vaya, parece que esta ciudad está hecha un desastre",
+          "Fíjate cuanto desperdicio hay por todas partes",
+          "Me parece que no les vendría mal un poco de ayuda"
+        ]
+      },
+      {
+        "type": "VIDEOGAME ENABLE CLICK",
         "payload": {
-          "text": [
-            "Vaya, parece que esta ciudad está hecha un desastre",
-            "Fíjate cuanto desperdicio hay por todas partes",
-            "Me parece que no les vendría mal un poco de ayuda"]
+          "instant": true
         }
       },
       {
@@ -75,54 +81,48 @@
     "at": { "x": 12, "y": 18 },
     "actions": [
       {
-        "type": "MOVE PLAYER",
+        "type": "PLAYER MOVE",
         "payload": {
           "direction": "UP",
           "position": { "x": 12, "y": 19 }
         }
       },
       {
-        "type": "SHOW TEXT",
-        "payload": {
-          "text": ["Hola, soy una papelera", "Estoy llena de basura"]
-        }
+        "type": "DIALOGS SET",
+        "payload": ["Hola, soy una papelera", "Estoy llena de basura"]
       },
       {
-        "type": "SHOW CHOICES",
-        "payload": {
-          "choices": [
-            {
-              "text": "Vaciar la papelera",
-              "actions": [
-                {
-                  "type": "SHOW TEXT",
-                  "payload": {
-                    "text": [
-                      "Te esfuerzas en vaciar la papelera",
-                      "Ha quedado como los chorros del oro"]
-                  }
-                },
-                {
-                  "type": "EVENTS DONE",
-                  "payload": {
-                    "id": "dialog001",
-                    "instant": true
-                  }
+        "type": "CHOICES SET",
+        "payload": [
+          {
+            "text": "Vaciar la papelera",
+            "actions": [
+              {
+                "type": "DIALOGS SET",
+                "payload": [
+                  "Te esfuerzas en vaciar la papelera",
+                  "Ha quedado como los chorros del oro"
+                ]
+              },
+              {
+                "type": "EVENTS DONE",
+                "payload": {
+                  "id": "dialog001",
+                  "instant": true
                 }
-              ]
-            },
-            {
-              "text": "Dejarla como está",
-              "actions": [
-                {
-                  "type": "SHOW TEXT",
-                  "payload": {
-                    "text": ["Dejas la papelera tal cual"]
-                  }
-                }
-              ]
-            }]
-        }
+              }
+            ]
+          },
+          {
+            "text": "Dejarla como está",
+            "actions": [
+              {
+                "type": "DIALOGS SET",
+                "payload": ["Dejas la papelera tal cual"]
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -133,20 +133,18 @@
     "at": { "x": 7, "y": 16 },
     "actions": [
       {
-        "type": "MOVE PLAYER",
+        "type": "PLAYER MOVE",
         "payload": {
           "direction": "RIGHT",
           "position": { "x": 6, "y": 16 }
         }
       },
       {
-        "type": "SHOW TEXT",
-        "payload": {
-          "text": [
-            "Ves un coche viejo y destartalado aparcado",
-            "No sabes cómo, pero continúa echando humo por el tubo de escape"
-          ]
-        }
+        "type": "DIALOGS SET",
+        "payload": [
+          "Ves un coche viejo y destartalado aparcado",
+          "No sabes cómo, pero continúa echando humo por el tubo de escape"
+        ]
       },
       {
         "type": "EVENTS DONE",

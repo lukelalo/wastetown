@@ -4,6 +4,9 @@ import { COLLISION } from "../constants/game.constants";
 import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
 import * as actions from "../redux/actions";
+import * as behavior from "../redux/reducers/behavior";
+import * as events from "../redux/reducers/events";
+import * as player from "../redux/reducers/player";
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -28,7 +31,7 @@ export default class Game extends Phaser.Scene {
     this.map = this.make.tilemap({ key: this.currentMap.name });
     this.mapName = this.currentMap.name;
     this.dispatch(
-      actions.eventsInit({
+      events.init({
         [this.currentMap.name]: this.game.cache.json.get(
           `${this.currentMap.name}Events`
         ),
@@ -120,7 +123,7 @@ export default class Game extends Phaser.Scene {
 
     // Player
     this.dispatch(
-      actions.playerInit({
+      player.init({
         position: this.currentMap.position,
         direction: this.currentMap.direction,
       })
@@ -163,7 +166,9 @@ export default class Game extends Phaser.Scene {
     this.marker.x = this.map.tileToWorldX(pointerTileX);
     this.marker.y = this.map.tileToWorldY(pointerTileY);
     this.marker.setVisible(
-      this.videogame.clicks && !this.player.isActing && !this.checkCollision(pointerTileX, pointerTileY)
+      this.videogame.clicks &&
+        !this.player.isActing &&
+        !this.checkCollision(pointerTileX, pointerTileY)
     );
 
     // Check map name
@@ -193,9 +198,7 @@ export default class Game extends Phaser.Scene {
 
     if (!this.checkCollision(x, y)) {
       this.dispatch(
-        actions.videogameSetActions([
-          actions.movePlayer({ position: { x, y } }),
-        ])
+        behavior.set([player.move({ position: { x, y } })])
       );
     } else {
       // Check event when clicking at position
@@ -218,7 +221,7 @@ export default class Game extends Phaser.Scene {
 
   executeEventActions(eventActions) {
     if (eventActions.length > 0) {
-      this.dispatch(actions.videogameSetActions(eventActions));
+      this.dispatch(behavior.set(eventActions));
     }
   }
 
@@ -240,11 +243,11 @@ export default class Game extends Phaser.Scene {
     this.checkEventAtPosition(payload, "POSITION");
 
     // Send player position action
-    this.dispatch(actions.playerPosition(payload));
+    this.dispatch(player.position(payload));
   }
 
   playerSetPath(payload) {
-    this.dispatch(actions.playerPath(payload));
+    this.dispatch(player.path(payload));
   }
 
   checkCollision(x, y) {
