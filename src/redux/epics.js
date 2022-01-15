@@ -9,10 +9,9 @@ import {
   ignoreElements,
 } from "rxjs/operators";
 import { race, of, iif } from "rxjs";
-import * as actions from "../actions";
-import * as behavior from "../reducers/behavior";
-import * as dialogs from "../reducers/dialogs";
-import * as player from "../reducers/player";
+import * as behavior from "./reducers/behavior";
+import * as dialogs from "./reducers/dialogs";
+import * as player from "./reducers/player";
 
 export const behaviorNextEpic = (action$, state$) =>
   action$.pipe(
@@ -74,7 +73,7 @@ export const movePlayerEpic = (action$, state$) =>
     )
   );
 
-export const showTextEpic = (action$, state$) =>
+export const dialogsSetEpic = (action$, state$) =>
   action$.pipe(
     ofType(dialogs.SET),
     withLatestFrom(state$),
@@ -102,5 +101,5 @@ export const epics = [
   movePlayerEpic,
   behaviorNextEpic,
   behaviorSetEpic,
-  showTextEpic,
+  dialogsSetEpic,
 ];

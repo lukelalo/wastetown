@@ -5,11 +5,12 @@
     "at": { "x": 19, "y": 19 },
     "actions": [
       {
-        "type": "CHANGE SCENE",
+        "type": "MAP SET",
         "payload": {
           "name": "city",
           "direction": "DOWN",
-          "position": { "x": 16, "y": 17 }
+          "position": { "x": 16, "y": 17 },
+          "instant": true
         }
       }
     ]
@@ -20,11 +21,12 @@
     "at": { "x": 20, "y": 19 },
     "actions": [
       {
-        "type": "CHANGE SCENE",
+        "type": "MAP SET",
         "payload": {
           "name": "city",
           "direction": "DOWN",
-          "position": { "x": 17, "y": 17 }
+          "position": { "x": 17, "y": 17 },
+          "instant": true
         }
       }
     ]

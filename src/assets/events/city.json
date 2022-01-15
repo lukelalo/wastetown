@@ -48,7 +48,7 @@
     "at": { "x": 16, "y": 16 },
     "actions": [
       {
-        "type": "CHANGE SCENE",
+        "type": "MAP SET",
         "payload": {
           "name": "townHall",
           "direction": "UP",
@@ -64,7 +64,7 @@
     "at": { "x": 17, "y": 16 },
     "actions": [
       {
-        "type": "CHANGE SCENE",
+        "type": "MAP SET",
         "payload": {
           "name": "townHall",
           "direction": "UP",

@@ -1,5 +1,10 @@
-import { CHANGE_SCENE } from "../actions";
 import { Directions } from "../../constants/game.constants";
+
+export const SET = "MAP SET";
+export const set = (payload) => ({
+  type: SET,
+  payload: { instant: true, ...payload },
+});
 
 export default (
   state = {
@@ -10,7 +15,7 @@ export default (
   { type, payload }
 ) => {
   switch (type) {
-    case CHANGE_SCENE:
+    case SET:
       return {
         ...state,
         ...payload,
