@@ -6,7 +6,9 @@
     "actions": [
       {
         "type": "VIDEOGAME DISABLE CLICK",
-        "payload": {}
+        "payload": {
+          "instant": true
+        }
       },
       {
         "type": "MOVE PLAYER",
@@ -26,13 +28,10 @@
         }
       },
       {
-        "type": "VIDEOGAME ENABLE CLICK",
-        "payload": {}
-      },
-      {
         "type": "EVENTS DONE",
         "payload": {
-          "id": "animation001"
+          "id": "animation001",
+          "instant": true
         }
       }
     ]
@@ -47,7 +46,8 @@
         "payload": {
           "name": "townHall",
           "direction": "UP",
-          "position": { "x": 19, "y": 18 }
+          "position": { "x": 19, "y": 18 },
+          "instant": true
         }
       }
     ]
@@ -62,7 +62,8 @@
         "payload": {
           "name": "townHall",
           "direction": "UP",
-          "position": { "x": 20, "y": 18 }
+          "position": { "x": 20, "y": 18 },
+          "instant": true
         }
       }
     ]
@@ -104,7 +105,8 @@
                 {
                   "type": "EVENTS DONE",
                   "payload": {
-                    "id": "dialog001"
+                    "id": "dialog001",
+                    "instant": true
                   }
                 }
               ]
@@ -149,7 +151,8 @@
       {
         "type": "EVENTS DONE",
         "payload": {
-          "id": "dialog002"
+          "id": "dialog002",
+          "instant": true
         }
       }
     ]

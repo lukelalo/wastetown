@@ -26,13 +26,13 @@ export const playerPosition = (payload) => ({ type: PLAYER_POSITION, payload });
 export const VIDEOGAME_ENABLE_CLICK = "VIDEOGAME ENABLE CLICK";
 export const videogameEnableClick = (payload) => ({
   type: VIDEOGAME_ENABLE_CLICK,
-  payload,
+  payload: { instant: true, ...payload },
 });
 
 export const VIDEOGAME_DISABLE_CLICK = "VIDEOGAME DISABLE CLICK";
 export const videogameDisableClick = (payload) => ({
   type: VIDEOGAME_DISABLE_CLICK,
-  payload,
+  payload: { instant: true, ...payload },
 });
 
 export const VIDEOGAME_NEXT_ACTION = "VIDEOGAME NEXT ACTION";
@@ -64,7 +64,10 @@ export const EVENTS_INIT = "EVENTS INIT";
 export const eventsInit = (payload) => ({ type: EVENTS_INIT, payload });
 
 export const EVENTS_DONE = "EVENTS DONE";
-export const eventsDone = (payload) => ({ type: EVENTS_DONE, payload });
+export const eventsDone = (payload) => ({
+  type: EVENTS_DONE,
+  payload: { instant: true, ...payload },
+});
 
 // GAME ACTIONS
 export const MOVE_PLAYER = "MOVE PLAYER";
@@ -77,4 +80,7 @@ export const SHOW_CHOICES = "SHOW CHOICES";
 export const showChoices = (payload) => ({ type: SHOW_CHOICES, payload });
 
 export const CHANGE_SCENE = "CHANGE SCENE";
-export const changeScene = (payload) => ({ type: CHANGE_SCENE, payload });
+export const changeScene = (payload) => ({
+  type: CHANGE_SCENE,
+  payload: { instant: true, ...payload },
+});

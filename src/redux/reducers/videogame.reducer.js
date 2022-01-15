@@ -21,11 +21,6 @@ export default (
     //     ...state,
     //     actions: [...state.actions, ...payload.script],
     //   };
-    // case PLAYER_IDLE:
-    //   return {
-    //     ...state,
-    //     actions: [],
-    //   };
 
     case SHOW_TEXT:
       return {
@@ -39,7 +34,7 @@ export default (
         choices: payload.choices,
       };
 
-    case VIDEOGAME_ENABLE_CLICK:
+    case PLAYER_IDLE:
       return {
         ...state,
         clicks: true,
@@ -74,6 +69,7 @@ export default (
       return {
         ...state,
         actions: payload,
+        choices: [],
       };
 
     default:

@@ -63,7 +63,6 @@ export default class Dialog extends Phaser.Scene {
   }
 
   update(time) {
-
     // Dialogs
     if (this.videogame.dialogs.length > 0 && this.dialogText === null) {
       this.showDialogs(time);
@@ -72,7 +71,10 @@ export default class Dialog extends Phaser.Scene {
     }
 
     // Choices
-    if ((this.videogame.choices || []).length > 0 && this.choices.length === 0) {
+    if (
+      (this.videogame.choices || []).length > 0 &&
+      this.choices.length === 0
+    ) {
       this.showChoices();
     }
 
@@ -112,9 +114,14 @@ export default class Dialog extends Phaser.Scene {
   showChoices() {
     let choices = this.videogame.choices;
     let position = 0;
-    this.choices = choices.map(choice => {
-      let choiceText = this.generateText(choice.text, position++)
-      choiceText.on("pointerdown", (pointer, localX, localY, event) => this.handleClickChoice(event, choice.actions), this);
+    this.choices = choices.map((choice) => {
+      let choiceText = this.generateText(choice.text, position++);
+      choiceText.on(
+        "pointerdown",
+        (pointer, localX, localY, event) =>
+          this.handleClickChoice(event, choice.actions),
+        this
+      );
       return choiceText;
     });
     this.background.setVisible(true);
@@ -122,21 +129,26 @@ export default class Dialog extends Phaser.Scene {
 
   handleClickChoice(event, choiceActions) {
     event.stopPropagation();
-    this.choices.forEach(choice => {
+    this.choices.forEach((choice) => {
       choice.setVisible(false);
       choice.disableInteractive();
     });
     this.choices = [];
     this.background.setVisible(false);
-    this.store.dispatch(actions.videogameClickChoice(choiceActions));
+    this.store.dispatch(actions.videogameSetActions(choiceActions));
   }
 
   generateText(text, position) {
-    let textGraphic = this.add.text(SCREEN_WIDTH / 20, (SCREEN_HEIGHT * 3) / 4 + (position * 50), "", {
-      fontFamily: "Sans",
-      fontSize: 30,
-      color: "#e3f2ed",
-    });
+    let textGraphic = this.add.text(
+      SCREEN_WIDTH / 20,
+      (SCREEN_HEIGHT * 3) / 4 + position * 50,
+      "",
+      {
+        fontFamily: "Sans",
+        fontSize: 30,
+        color: "#e3f2ed",
+      }
+    );
     textGraphic.setOrigin(0, 0);
     textGraphic.setStroke("#203c5b", 6);
     textGraphic.setShadow(2, 2, "#2d2d2d", 4, true, false);

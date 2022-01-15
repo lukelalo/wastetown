@@ -37,34 +37,9 @@ export const setActionsEpic = (action$, state$) =>
     }))
   );
 
-export const changeSceneEpic = (action$, state$) =>
+export const instantEventEpic = (action$, state$) =>
   action$.pipe(
-    ofType(actions.CHANGE_SCENE),
-    mapTo(actions.videogameNextAction())
-  );
-
-export const eventsDoneEpic = (action$, state$) =>
-  action$.pipe(
-    ofType(actions.EVENTS_DONE),
-    mapTo(actions.videogameNextAction())
-  );
-
-
-  export const enableClickEpic = (action$, state$) =>
-  action$.pipe(
-    ofType(actions.VIDEOGAME_ENABLE_CLICK),
-    mapTo(actions.videogameNextAction())
-  );
-
-  export const disableClickEpic = (action$, state$) =>
-  action$.pipe(
-    ofType(actions.VIDEOGAME_DISABLE_CLICK),
-    mapTo(actions.videogameNextAction())
-  );
-
-export const playerActionEpic = (action$, state$) =>
-  action$.pipe(
-    ofType(actions.PLAYER_ACTION),
+    filter(({ payload }) => payload?.instant),
     mapTo(actions.videogameNextAction())
   );
 
@@ -127,42 +102,10 @@ export const showTextEpic = (action$, state$) =>
     )
   );
 
-export const showChoicesEpic = (action$, state$) =>
-  action$.pipe(
-    ofType(actions.SHOW_CHOICES),
-    withLatestFrom(state$),
-    // Switch to the last Interact action
-    switchMap(([{ payload }, { videogame }]) =>
-      iif(
-        () => videogame.choices.length === 0,
-        of(actions.videogameNextAction()),
-        race(
-          action$.pipe(
-            ofType(actions.VIDEOGAME_CLICK_CHOICE),
-            withLatestFrom(state$),
-            filter(([action, { videogame }]) => videogame.choices.length === 0),
-            mapTo(actions.videogameNextAction()),
-            take(1)
-          ),
-          action$.pipe(
-            ofType(actions.VIDEOGAME_SET_ACTIONS),
-            take(1),
-            ignoreElements()
-          )
-        )
-      )
-    )
-  );
-
 export const epics = [
-  enableClickEpic,
-  disableClickEpic,
+  instantEventEpic,
+  movePlayerEpic,
   nextActionEpic,
   setActionsEpic,
-  playerActionEpic,
-  eventsDoneEpic,
-  changeSceneEpic,
-  movePlayerEpic,
   showTextEpic,
-  showChoicesEpic,
 ];
