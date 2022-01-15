@@ -21,6 +21,7 @@ export default class Dialog extends Phaser.Scene {
     this.letterNumber = 0;
     this.dialogText = null;
     this.letterTime = 0;
+    this.choices = [];
 
     // Dialog
     this.background = this.add.graphics();
@@ -43,23 +44,8 @@ export default class Dialog extends Phaser.Scene {
     );
     this.background.on("pointerdown", this.handleClick, this);
 
-    this.text1 = this.add.text(SCREEN_WIDTH / 20, (SCREEN_HEIGHT * 3) / 4, "", {
-      fontFamily: "Orbitron",
-      fontSize: 30,
-      color: "#e3f2ed",
-    });
-    this.text1.setOrigin(0, 0);
-    this.text1.setStroke("#203c5b", 6);
-    this.text1.setShadow(2, 2, "#2d2d2d", 4, true, false);
-    this.text1.setDepth(50);
-    this.text1.setInteractive();
+    this.text1 = this.generateText("", 0);
     this.text1.setVisible(false);
-    this.text1.setStyle({
-      wordWrap: {
-        width: SCREEN_WIDTH - SCREEN_WIDTH / 10,
-        useAdvancedWrap: true,
-      },
-    });
     this.text1.on("pointerdown", this.handleClick, this);
   }
 
@@ -71,23 +57,38 @@ export default class Dialog extends Phaser.Scene {
       this.dialogText = null;
       this.letterNumber = 0;
       this.store.dispatch(actions.videogameNextDialog());
+      this.background.setVisible(false);
     }
     event.stopPropagation();
   }
 
   update(time) {
+
+    // Dialogs
     if (this.videogame.dialogs.length > 0 && this.dialogText === null) {
-      const dialog = this.videogame.dialogs[0];
-      this.dialogText = dialog;
-      this.text1.setVisible(true);
-      this.background.setVisible(true);
-      this.letterTime = time;
+      this.showDialogs(time);
     } else if (this.dialogText === null) {
-      this.text1.setText("");
-      this.text1.setVisible(false);
-      this.background.setVisible(false);
+      this.hideDialogs();
     }
 
+    // Choices
+    if ((this.videogame.choices || []).length > 0 && this.choices.length === 0) {
+      this.showChoices();
+    }
+
+    // Print dialog text
+    this.printDialogText(time);
+  }
+
+  showDialogs(time) {
+    const dialog = this.videogame.dialogs[0];
+    this.dialogText = dialog;
+    this.text1.setVisible(true);
+    this.background.setVisible(true);
+    this.letterTime = time;
+  }
+
+  printDialogText(time) {
     if (
       this.dialogText !== null &&
       this.letterNumber < this.dialogText.length &&
@@ -101,5 +102,53 @@ export default class Dialog extends Phaser.Scene {
   nextLetter() {
     this.letterNumber++;
     this.text1.setText(this.dialogText.substr(0, this.letterNumber));
+  }
+
+  hideDialogs() {
+    this.text1.setText("");
+    this.text1.setVisible(false);
+  }
+
+  showChoices() {
+    let choices = this.videogame.choices;
+    let position = 0;
+    this.choices = choices.map(choice => {
+      let choiceText = this.generateText(choice.text, position++)
+      choiceText.on("pointerdown", (pointer, localX, localY, event) => this.handleClickChoice(event, choice.actions), this);
+      return choiceText;
+    });
+    this.background.setVisible(true);
+  }
+
+  handleClickChoice(event, choiceActions) {
+    event.stopPropagation();
+    this.choices.forEach(choice => {
+      choice.setVisible(false);
+      choice.disableInteractive();
+    });
+    this.choices = [];
+    this.background.setVisible(false);
+    this.store.dispatch(actions.videogameClickChoice(choiceActions));
+  }
+
+  generateText(text, position) {
+    let textGraphic = this.add.text(SCREEN_WIDTH / 20, (SCREEN_HEIGHT * 3) / 4 + (position * 50), "", {
+      fontFamily: "Sans",
+      fontSize: 30,
+      color: "#e3f2ed",
+    });
+    textGraphic.setOrigin(0, 0);
+    textGraphic.setStroke("#203c5b", 6);
+    textGraphic.setShadow(2, 2, "#2d2d2d", 4, true, false);
+    textGraphic.setDepth(50);
+    textGraphic.setInteractive();
+    textGraphic.setStyle({
+      wordWrap: {
+        width: SCREEN_WIDTH - SCREEN_WIDTH / 10,
+        useAdvancedWrap: true,
+      },
+    });
+    textGraphic.setText(text);
+    return textGraphic;
   }
 }

@@ -2,10 +2,12 @@ import {
   PLAYER_ACTION,
   PLAYER_IDLE,
   SHOW_TEXT,
+  SHOW_CHOICES,
   VIDEOGAME_DISABLE_CLICK,
   VIDEOGAME_ENABLE_CLICK,
   VIDEOGAME_NEXT_ACTION,
   VIDEOGAME_NEXT_DIALOG,
+  VIDEOGAME_CLICK_CHOICE,
   VIDEOGAME_SET_ACTIONS,
 } from "../actions";
 
@@ -31,6 +33,12 @@ export default (
         dialogs: payload.text,
       };
 
+    case SHOW_CHOICES:
+      return {
+        ...state,
+        choices: payload.choices,
+      };
+
     case VIDEOGAME_ENABLE_CLICK:
       return {
         ...state,
@@ -53,6 +61,13 @@ export default (
       return {
         ...state,
         dialogs: state.dialogs.slice(1),
+      };
+
+    case VIDEOGAME_CLICK_CHOICE:
+      return {
+        ...state,
+        choices: [],
+        actions: payload,
       };
 
     case VIDEOGAME_SET_ACTIONS:

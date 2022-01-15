@@ -17,12 +17,6 @@
         }
       },
       {
-        "type": "EVENTS DONE",
-        "payload": {
-          "id": "animation001"
-        }
-      },
-      {
         "type": "SHOW TEXT",
         "payload": {
           "text": [
@@ -34,6 +28,12 @@
       {
         "type": "VIDEOGAME ENABLE CLICK",
         "payload": {}
+      },
+      {
+        "type": "EVENTS DONE",
+        "payload": {
+          "id": "animation001"
+        }
       }
     ]
   },
@@ -84,6 +84,42 @@
         "type": "SHOW TEXT",
         "payload": {
           "text": ["Hola, soy una papelera", "Estoy llena de basura"]
+        }
+      },
+      {
+        "type": "SHOW CHOICES",
+        "payload": {
+          "choices": [
+            {
+              "text": "Vaciar la papelera",
+              "actions": [
+                {
+                  "type": "SHOW TEXT",
+                  "payload": {
+                    "text": [
+                      "Te esfuerzas en vaciar la papelera",
+                      "Ha quedado como los chorros del oro"]
+                  }
+                },
+                {
+                  "type": "EVENTS DONE",
+                  "payload": {
+                    "id": "dialog001"
+                  }
+                }
+              ]
+            },
+            {
+              "text": "Dejarla como está",
+              "actions": [
+                {
+                  "type": "SHOW TEXT",
+                  "payload": {
+                    "text": ["Dejas la papelera tal cual"]
+                  }
+                }
+              ]
+            }]
         }
       }
     ]

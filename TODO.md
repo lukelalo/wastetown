@@ -11,9 +11,9 @@
 
 - [x] Cambiar de mapa al entrar en una casa
 - [ ] Definir eventos de una sola ejecución, de varias o recurrentes
-- [ ] Marcar como finalizados los quests
-- [ ] Acción de comienzo de animación
-- [ ] Acción de finalización de animación
+- [x] Marcar como finalizados los eventos
+- [x] Acción de comienzo de animación
+- [x] Acción de finalización de animación
 - [x] Los textos deben poder ocupar más de una linea
 - [ ] Agregar lógica para las posibles opciones en un texto
 - [x] Mostrar el texto letra a letra

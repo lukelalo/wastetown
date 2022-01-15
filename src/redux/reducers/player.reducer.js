@@ -5,6 +5,7 @@ import {
   PLAYER_INIT,
   PLAYER_PATH,
   PLAYER_POSITION,
+  SHOW_CHOICES,
   SHOW_TEXT,
 } from "../actions";
 import { Directions, Status } from "../../constants/game.constants";
@@ -64,6 +65,7 @@ export default (
     }
 
     case SHOW_TEXT:
+    case SHOW_CHOICES:
       return {
         ...state,
         status: Status.ACTING,

@@ -127,6 +127,33 @@ export const showTextEpic = (action$, state$) =>
     )
   );
 
+export const showChoicesEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(actions.SHOW_CHOICES),
+    withLatestFrom(state$),
+    // Switch to the last Interact action
+    switchMap(([{ payload }, { videogame }]) =>
+      iif(
+        () => videogame.choices.length === 0,
+        of(actions.videogameNextAction()),
+        race(
+          action$.pipe(
+            ofType(actions.VIDEOGAME_CLICK_CHOICE),
+            withLatestFrom(state$),
+            filter(([action, { videogame }]) => videogame.choices.length === 0),
+            mapTo(actions.videogameNextAction()),
+            take(1)
+          ),
+          action$.pipe(
+            ofType(actions.VIDEOGAME_SET_ACTIONS),
+            take(1),
+            ignoreElements()
+          )
+        )
+      )
+    )
+  );
+
 export const epics = [
   enableClickEpic,
   disableClickEpic,
@@ -137,4 +164,5 @@ export const epics = [
   changeSceneEpic,
   movePlayerEpic,
   showTextEpic,
+  showChoicesEpic,
 ];

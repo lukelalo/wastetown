@@ -47,6 +47,12 @@ export const videogameNextDialog = (payload) => ({
   payload,
 });
 
+export const VIDEOGAME_CLICK_CHOICE = "VIDEOGAME CLICK CHOICE";
+export const videogameClickChoice = (payload) => ({
+  type: VIDEOGAME_CLICK_CHOICE,
+  payload,
+});
+
 export const VIDEOGAME_SET_ACTIONS = "VIDEOGAME SET ACTIONS";
 export const videogameSetActions = (payload) => ({
   type: VIDEOGAME_SET_ACTIONS,
@@ -66,6 +72,9 @@ export const movePlayer = (payload) => ({ type: MOVE_PLAYER, payload });
 
 export const SHOW_TEXT = "SHOW TEXT";
 export const showText = (payload) => ({ type: SHOW_TEXT, payload });
+
+export const SHOW_CHOICES = "SHOW CHOICES";
+export const showChoices = (payload) => ({ type: SHOW_CHOICES, payload });
 
 export const CHANGE_SCENE = "CHANGE SCENE";
 export const changeScene = (payload) => ({ type: CHANGE_SCENE, payload });
