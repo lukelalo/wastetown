@@ -14,6 +14,13 @@ export const hide = () => ({ type: HIDE });
 
 export default (state = { objects: [], visible: false }, { type, payload }) => {
   switch (type) {
+    case behavior.SET:
+    case HIDE:
+      return {
+        ...state,
+        visible: false,
+      };
+
     case ADD:
       return {
         ...state,
@@ -30,13 +37,6 @@ export default (state = { objects: [], visible: false }, { type, payload }) => {
       return {
         ...state,
         visible: true,
-      };
-
-    case behavior.SET:
-    case HIDE:
-      return {
-        ...state,
-        visible: false,
       };
 
     default:

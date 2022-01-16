@@ -2,6 +2,7 @@ import { Directions, Status } from "../../constants/game.constants";
 
 import * as choices from "./choices";
 import * as dialogs from "./dialogs";
+import * as behavior from "./behavior";
 
 // Player actions
 export const ACTION = "PLAYER ACTION";
@@ -39,6 +40,15 @@ export default (
   { type, payload }
 ) => {
   switch (type) {
+    case behavior.SET:
+    case IDLE:
+      return {
+        ...state,
+        destination: {},
+        status: Status.IDLE,
+        path: [],
+      };
+
     case ACTION:
       return {
         ...state,
@@ -54,14 +64,6 @@ export default (
         direction: [payload.direction],
         path: [],
         status: Status.IDLE,
-      };
-
-    case IDLE:
-      return {
-        ...state,
-        destination: {},
-        status: Status.IDLE,
-        path: [],
       };
 
     case MOVE: {
