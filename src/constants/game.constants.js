@@ -8,6 +8,7 @@ export const BACKGROUND = "Background";
 export const BUILDINGS = "Buildings";
 export const DETAILS = "Details";
 export const TOP = "Top";
+export const DEBUG = false;
 
 export const Directions = {
   UP: "UP",

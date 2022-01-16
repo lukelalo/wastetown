@@ -1,4 +1,4 @@
-import { Directions, Status, Animations } from "../constants/game.constants";
+import { Directions, Status, Animations, DEBUG } from "../constants/game.constants";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene) {
@@ -106,7 +106,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             console.warn("Path was not found.");
           } else {
             this.scene.playerSetPath({path: path.slice(1)});
-            console.log(path);
+            if(DEBUG) {
+              console.log(path);
+            }
           }
         });
       }

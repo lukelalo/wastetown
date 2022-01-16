@@ -28,12 +28,6 @@
         ]
       },
       {
-        "type": "VIDEOGAME ENABLE CLICK",
-        "payload": {
-          "instant": true
-        }
-      },
-      {
         "type": "EVENTS DONE",
         "payload": {
           "id": "animation001",

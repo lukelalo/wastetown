@@ -1,5 +1,9 @@
 import Phaser from "phaser";
-import { SCREEN_WIDTH, SCREEN_HEIGHT } from "../constants/game.constants";
+import {
+  SCREEN_WIDTH,
+  SCREEN_HEIGHT,
+  DEBUG,
+} from "../constants/game.constants";
 
 export default class Menu extends Phaser.Scene {
   constructor() {
@@ -35,7 +39,9 @@ export default class Menu extends Phaser.Scene {
     newGame.setShadow(2, 2, "#2d2d2d", 4, true, false);
     newGame.setInteractive();
     newGame.once("pointerdown", (pointer, localX, localY, event) => {
-      console.log("Game starts");
+      if (DEBUG) {
+        console.log("Game starts");
+      }
       this.scene.start("Game");
       event.stopPropagation();
     });

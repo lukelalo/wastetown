@@ -1,9 +1,8 @@
 import Phaser from "phaser";
 
-import { COLLISION } from "../constants/game.constants";
+import { COLLISION, DEBUG } from "../constants/game.constants";
 import Player from "../actors/player.actor";
 import EasyStar from "easystarjs";
-import * as actions from "../redux/actions";
 import * as behavior from "../redux/reducers/behavior";
 import * as events from "../redux/reducers/events";
 import * as player from "../redux/reducers/player";
@@ -233,7 +232,9 @@ export default class Game extends Phaser.Scene {
     this.destination.y = this.map.tileToWorldY(y);
     this.destination.setVisible(this.videogame.clicks);
 
-    console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
+    if(DEBUG){
+      console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
+    }
     this.finder.findPath(fromX, fromY, x, y, callback);
     this.finder.calculate();
   }

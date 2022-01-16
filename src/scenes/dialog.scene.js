@@ -5,7 +5,6 @@ import {
   SCREEN_WIDTH,
   LETTER_TIME,
 } from "../constants/game.constants";
-import * as actions from "../redux/actions";
 import * as behavior from "../redux/reducers/behavior";
 import * as dialogs from "../redux/reducers/dialogs";
 
