@@ -17,10 +17,14 @@
 - [x] Al hacer click en el fondo del diálogo es como si se hiciera click en el texto
 - [x] Evitar que los clicks en la capa de dialogo muevan al personaje
 - [x] Los punteros se siguen viendo cuando se está ejecutando una acción
+- [x] Generar un inventario de personaje, y su lógica asociada. Cuándo está visible, cómo se usan los objetos
 
 ## Feature
 
-- [ ] Generar un inventario de personaje, y su lógica asociada. Cuándo está visible, cómo se usan los objetos
+- [ ] Mostrar los objetos en el inventario
+- [ ] Interactuar con los objetos
 
 ## Bugs
 
+- [ ] Cuando hay varias opciones visibles y se hace click en el fondo, sale un mensaje de error por consola.
+- [ ] Al saltar un evento de tipo posicion no se está parando el evento actual.

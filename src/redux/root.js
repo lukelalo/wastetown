@@ -4,8 +4,9 @@ import { epics } from "./epics";
 import behavior from "./reducers/behavior";
 import choices from "./reducers/choices";
 import dialogs from "./reducers/dialogs";
-import player from "./reducers/player";
 import events from "./reducers/events";
+import inventory from "./reducers/inventory";
+import player from "./reducers/player";
 import map from "./reducers/map";
 import videogame from "./reducers/videogame";
 
@@ -15,8 +16,9 @@ export const rootReducer = combineReducers({
   behavior,
   choices,
   dialogs,
-  player,
   events,
+  inventory,
   map,
+  player,
   videogame,
 });

@@ -6,6 +6,7 @@ import EasyStar from "easystarjs";
 import * as behavior from "../redux/reducers/behavior";
 import * as events from "../redux/reducers/events";
 import * as player from "../redux/reducers/player";
+import * as inventory from "../redux/reducers/inventory";
 
 export default class Game extends Phaser.Scene {
   constructor() {
@@ -14,6 +15,10 @@ export default class Game extends Phaser.Scene {
 
   get videogame() {
     return this.store.getState()["videogame"];
+  }
+
+  get state() {
+    return this.store.getState();
   }
 
   get eventList() {
@@ -195,10 +200,13 @@ export default class Game extends Phaser.Scene {
     const x = this.map.worldToTileX(this.camera.scrollX + pointer.x);
     const y = this.map.worldToTileY(this.camera.scrollY + pointer.y);
 
-    if (!this.checkCollision(x, y)) {
-      this.dispatch(
-        behavior.set([player.move({ position: { x, y } })])
-      );
+    if (
+      this.state.player.position.x === x &&
+      this.state.player.position.y === y
+    ) {
+      this.dispatch(behavior.set([inventory.show()]));
+    } else if (!this.checkCollision(x, y)) {
+      this.dispatch(behavior.set([player.move({ position: { x, y } })]));
     } else {
       // Check event when clicking at position
       this.checkEventAtPosition({ position: { x, y } }, "CLICK");
@@ -232,7 +240,7 @@ export default class Game extends Phaser.Scene {
     this.destination.y = this.map.tileToWorldY(y);
     this.destination.setVisible(this.videogame.clicks);
 
-    if(DEBUG){
+    if (DEBUG) {
       console.log(`going from (${fromX},${fromY}) to (${x},${y})`);
     }
     this.finder.findPath(fromX, fromY, x, y, callback);

@@ -148,5 +148,54 @@
         }
       }
     ]
+  },
+  {
+    "description": "Cardboard",
+    "id": "dialog003",
+    "launcher": "POSITION",
+    "at": { "x": 14, "y": 19 },
+    "actions": [
+      {
+        "type": "DIALOGS SET",
+        "payload": ["Encuentras una caja de cartón"]
+      },
+      {
+        "type": "CHOICES SET",
+        "payload": [
+          {
+            "text": "Coger la caja",
+            "actions": [
+              {
+                "type": "INVENTORY ADD",
+                "payload": {
+                  "id": "inventory001",
+                  "instant": true
+                }
+              },
+              {
+                "type": "DIALOGS SET",
+                "payload": ["Doblas bien la caja y te la guardas"]
+              },
+              {
+                "type": "EVENTS DONE",
+                "payload": {
+                  "id": "dialog003",
+                  "instant": true
+                }
+              }
+            ]
+          },
+          {
+            "text": "¡Qué asco! La dejas ahí",
+            "actions": [
+              {
+                "type": "DIALOGS SET",
+                "payload": ["Te marchas sin mirar atrás"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

@@ -4,6 +4,7 @@ import preloaderScene from "./scenes/preloader.scene";
 import menuScene from "./scenes/menu.scene";
 import gameScene from "./scenes/game.scene";
 import dialogScene from "./scenes/dialog.scene";
+import inventoryScene from "./scenes/inventory.scene";
 import Game from "./game/main.game";
 import "./fonts.css";
 
@@ -13,7 +14,14 @@ const config = {
   pixelArt: true,
   width: SCREEN_WIDTH,
   height: SCREEN_HEIGHT,
-  scene: [bootScene, preloaderScene, menuScene, gameScene, dialogScene],
+  scene: [
+    bootScene,
+    preloaderScene,
+    menuScene,
+    gameScene,
+    dialogScene,
+    inventoryScene,
+  ],
   physics: {
     default: "arcade",
     arcade: { debug: false },
